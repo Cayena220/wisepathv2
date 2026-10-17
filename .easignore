@@ -1,0 +1,17 @@
+# EAS uploads the whole monorepo. Keep every workspace package.json (npm ci needs them),
+# but never upload service-account keys or build outputs.
+node_modules/
+**/node_modules/
+dist/
+apps/admin-web/dist/
+apps/mobile/android/
+apps/mobile/ios/
+.expo/
+*.apk
+*.aab
+*.idsig
+scripts/.secrets/
+service-account*.json
+emulator-data/
+.firebase/
+*.log

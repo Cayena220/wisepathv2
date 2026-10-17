@@ -1,0 +1,129 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+
+@custom-variant dark (&:is(.dark *));
+
+/* WisePath brand tokens (mirrors packages/shared/src/brand/tokens.ts) */
+@theme {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --color-parchment: #fffdf8;
+  --color-surface: #f6f1e6;
+
+  --color-gold-50: #fbf5e8;
+  --color-gold-100: #f3e4c4;
+  --color-gold-300: #dfb468;
+  --color-gold-500: #c2872e;
+  --color-gold-700: #9a6a1f;
+
+  --color-teal-50: #eef5f1;
+  --color-teal-100: #dceae3;
+  --color-teal-500: #4f8f80;
+  --color-teal-600: #3e7a6c;
+  --color-teal-700: #2f5f54;
+
+  --color-navy-50: #f1f3f7;
+  --color-navy-100: #e4e8ee;
+  --color-navy-200: #c9d1dc;
+  --color-navy-400: #8d9bae;
+  --color-navy-600: #5b6e85;
+  --color-navy-700: #33496a;
+  --color-navy-900: #1f3350;
+  --color-navy-950: #15243a;
+
+  --color-rust-100: #f6e4df;
+  --color-rust-600: #b0503b;
+  --color-rust-700: #8f3f2e;
+
+  --color-green-100: #ddf0e4;
+  --color-green-600: #2f7d55;
+  --color-amber-100: #fbebcb;
+  --color-amber-600: #b7791f;
+
+  /* semantic */
+  --color-background: var(--color-parchment);
+  --color-foreground: var(--color-navy-900);
+  --color-card: #ffffff;
+  --color-card-foreground: var(--color-navy-900);
+  --color-popover: #ffffff;
+  --color-popover-foreground: var(--color-navy-900);
+  --color-primary: var(--color-navy-900);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--color-surface);
+  --color-secondary-foreground: var(--color-navy-900);
+  --color-muted: #f3efe6;
+  --color-muted-foreground: var(--color-navy-600);
+  --color-accent: var(--color-gold-50);
+  --color-accent-foreground: var(--color-navy-900);
+  --color-destructive: var(--color-rust-600);
+  --color-destructive-foreground: #ffffff;
+  --color-border: rgb(31 51 80 / 0.12);
+  --color-input: rgb(31 51 80 / 0.18);
+  --color-ring: var(--color-gold-500);
+
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 24px;
+
+  --shadow-card: 0 1px 2px rgb(31 51 80 / 0.04), 0 4px 16px -4px rgb(31 51 80 / 0.08);
+  --shadow-lift: 0 2px 4px rgb(31 51 80 / 0.06), 0 12px 32px -8px rgb(31 51 80 / 0.16);
+
+  --animate-fade-in: fade-in 0.25s ease-out;
+  --animate-slide-up: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-route-dash: route-dash 40s linear infinite;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slide-in {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+  }
+  @keyframes route-dash {
+    to { stroke-dashoffset: -400; }
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv11', 'ss01';
+  }
+  ::selection {
+    background: var(--color-gold-100);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-gold-500);
+    outline-offset: 2px;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

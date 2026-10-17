@@ -1,0 +1,523 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "assessments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "role",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "role",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "nameLower",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "careerResults",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "careerResults",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isLatest",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "careerResults",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "bestProgramId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isLatest",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "careerResults",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "topDepartmentIds",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "careerResults",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "topDepartmentIds",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "careerResults",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "topDepartmentIds",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "isLatest",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "careerResults",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "topDepartmentIds",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "bestProgramId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isLatest",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "careerResults",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "topDepartmentIds",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "bestDepartmentId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isLatest",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "careerResults",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "topDepartmentIds",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "careerResults",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "topDepartmentIds",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "studentSnapshot.nameLower",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "careerResults",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "bestDepartmentId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isLatest",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "programAssessmentAttempts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "programAssessmentAttempts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "departmentId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "programAssessmentAttempts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "departmentId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "assessmentId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "programAssessmentAttempts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "departmentId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "programId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "programAssessmentAttempts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "departmentId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "programAssessmentAttempts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "assessmentId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "programAssessmentAttempts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "programId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "auditLogs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "departmentId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "auditLogs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "action",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "auditLogs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "targetId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "auditLogs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "departmentId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "targetId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "careerResults",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "topDepartmentIds",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "isLatest",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "careerResults",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "topDepartmentIds",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "bestDepartmentId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isLatest",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "careerResults",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "topDepartmentIds",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "bestProgramId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isLatest",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "careerResults",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "bestDepartmentId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isLatest",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "careerResults",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isLatest",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "programAssessmentAttempts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "departmentId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isFit",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "role",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "hasCareerResult",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "studentProgress",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "departmentId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

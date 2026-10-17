@@ -1,0 +1,46 @@
+{
+  "name": "wisepath-system",
+  "version": "2.0.0",
+  "private": true,
+  "description": "WisePath v2 — Android student app, Admin/Super Admin website, shared scoring engine, Firebase rules and scripts.",
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "scripts",
+    "firebase"
+  ],
+  "scripts": {
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm test -w @wisepath/shared",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-wisepath \"npm test -w @wisepath/firebase-tests\"",
+    "emulators": "firebase emulators:start --only auth,firestore --project demo-wisepath",
+    "web": "npm run dev -w @wisepath/admin-web",
+    "web:build": "npm run build -w @wisepath/admin-web",
+    "mobile": "npm run start -w @wisepath/mobile",
+    "bootstrap:superadmin": "npm run bootstrap -w @wisepath/scripts --",
+    "seed": "npm run seed -w @wisepath/scripts --",
+    "migrate": "npm run migrate -w @wisepath/scripts --",
+    "demo": "npm run demo -w @wisepath/scripts --",
+    "deploy:rules": "firebase deploy --only firestore:rules,firestore:indexes",
+    "deploy:web": "firebase deploy --only hosting",
+    "dev:emulator": "npm run dev:emulator -w @wisepath/admin-web"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "firebase-tools": "15.34.0",
+    "typescript": "~5.9.3"
+  },
+  "overrides": {
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "@firebase/util@1.15.3": true,
+    "protobufjs@7.6.6": true,
+    "re2@1.24.1": true
+  }
+}

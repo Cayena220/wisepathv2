@@ -1,0 +1,23 @@
+{
+  "name": "@wisepath/scripts",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bootstrap": "tsx src/bootstrap-super-admin.ts",
+    "seed": "tsx src/seed.ts",
+    "migrate": "tsx src/migrate-legacy.ts",
+    "demo": "tsx src/demo-data.ts",
+    "cleanup-orphans": "tsx src/cleanup-orphan-auth.ts",
+    "delete-auth-user": "tsx src/delete-auth-user.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@wisepath/shared": "*",
+    "firebase-admin": "^14.5.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3"
+  }
+}

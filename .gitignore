@@ -1,0 +1,40 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+build/
+.expo/
+web-build/
+apps/mobile/android/
+apps/mobile/ios/
+*.apk
+*.aab
+*.idsig
+
+# secrets — never commit
+.env
+.env.local
+.env.*.local
+apps/mobile/.env
+apps/admin-web/.env.local
+apps/mobile/credentials.json
+apps/mobile/credentials/
+scripts/.secrets/
+*.keystore
+*.jks
+service-account*.json
+
+# firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+emulator-data/
+
+# misc
+.DS_Store
+*.log
+coverage/
+.vscode/*
+!.vscode/extensions.json

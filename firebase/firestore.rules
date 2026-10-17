@@ -1,0 +1,377 @@
+rules_version = '2';
+
+// WisePath v2 security rules.
+//
+// Roles
+//   superadmin  exactly one; identified by the custom claim `superadmin: true` (set only by
+//               scripts/bootstrap-super-admin.ts with the Admin SDK — clients can never set it)
+//   admin       one per department; departments/{id}.adminUid is the single slot
+//   student     self-registers on Android, only while registration is open (server time)
+//
+// Department content (programs, program assessments, department career questions) can only be
+// written by the active admin of the department that owns it. Super Admin reads everything and
+// owns the system career questions.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ------------------------------------------------------------------ helpers
+    function signedIn() { return request.auth != null; }
+    function uid() { return request.auth.uid; }
+    function path(c, id) { return /databases/$(database)/documents/$(c)/$(id); }
+    function newData() { return request.resource.data; }
+    function oldData() { return resource.data; }
+    function onlyChanged(keys) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys); }
+
+    function hasMe() { return exists(path('users', uid())); }
+    function me() { return get(path('users', uid())).data; }
+    function myDept() { return me().departmentId; }
+    function deptData(d) { return get(path('departments', d)).data; }
+    function programData(p) { return get(path('programs', p)).data; }
+
+    function isSuperAdmin() { return signedIn() && request.auth.token.superadmin == true; }
+
+    function isStudent() {
+      return signedIn() && hasMe() && me().role == 'student' && me().get('status', 'active') == 'active';
+    }
+
+    // Active admin = role admin, not disabled, temporary password already changed,
+    // and still holding the slot of an active department.
+    function isActiveAdmin() {
+      return signedIn() && hasMe()
+        && me().role == 'admin'
+        && me().get('status', '') == 'active'
+        && me().get('mustChangePassword', true) == false
+        && deptData(me().departmentId).adminUid == uid()
+        && deptData(me().departmentId).status == 'active';
+    }
+
+    function isStaff() { return isSuperAdmin() || isActiveAdmin(); }
+    function isDeptOwner(d) { return isActiveAdmin() && myDept() == d; }
+
+    function createStamp() {
+      return newData().createdBy == uid() && newData().createdAt == request.time
+        && newData().updatedBy == uid() && newData().updatedAt == request.time;
+    }
+    function updateStamp() {
+      return newData().get('createdBy', null) == oldData().get('createdBy', null)
+        && newData().get('createdAt', null) == oldData().get('createdAt', null)
+        && newData().updatedBy == uid() && newData().updatedAt == request.time;
+    }
+
+    function registrationOpen() {
+      let r = get(path('settings', 'registration')).data;
+      return r.enabled == true
+        && (r.get('opensAt', null) == null || request.time >= r.opensAt)
+        && (r.get('closesAt', null) == null || request.time < r.closesAt);
+    }
+
+    function validProgram(p) {
+      return p.keys().hasOnly(['code', 'title', 'description', 'departmentId', 'difficulty', 'durationYears',
+                               'tuitionPerTerm', 'skills', 'careerPaths', 'curriculum', 'dimensionAffinity',
+                               'matchSignals', 'catalogOrder', 'status',
+                               'createdAt', 'createdBy', 'createdByName', 'updatedAt', 'updatedBy', 'updatedByName'])
+        && p.code is string && p.code.size() >= 2 && p.code.size() <= 20
+        && p.title is string && p.title.size() >= 3 && p.title.size() <= 160
+        && p.description is string && p.description.size() <= 2000
+        && p.difficulty in ['beginner', 'intermediate', 'advanced']
+        && p.durationYears is int && p.durationYears >= 1 && p.durationYears <= 6
+        && p.skills is list && p.skills.size() <= 30
+        && p.careerPaths is list && p.careerPaths.size() <= 30
+        && p.curriculum is list && p.curriculum.size() <= 24
+        && p.dimensionAffinity is map && p.matchSignals is map
+        && p.catalogOrder is number
+        && p.status in ['active', 'archived']
+        && (p.tuitionPerTerm == null
+            || (p.tuitionPerTerm.min is number && p.tuitionPerTerm.max is number
+                && p.tuitionPerTerm.min >= 0 && p.tuitionPerTerm.min <= p.tuitionPerTerm.max));
+    }
+
+    function validQuestion(q) {
+      return q.keys().hasOnly(['text', 'order', 'scope', 'departmentId', 'options', 'status',
+                               'createdAt', 'createdBy', 'createdByName', 'updatedAt', 'updatedBy', 'updatedByName'])
+        && q.text is string && q.text.size() >= 5 && q.text.size() <= 300
+        && q.options is list && q.options.size() >= 2 && q.options.size() <= 6
+        && q.order is number
+        && q.status in ['active', 'archived'];
+    }
+
+    function validAssessment(a) {
+      return a.keys().hasOnly(['programId', 'departmentId', 'title', 'description', 'passingPercent', 'version',
+                               'questions', 'status',
+                               'createdAt', 'createdBy', 'createdByName', 'updatedAt', 'updatedBy', 'updatedByName'])
+        && a.title is string && a.title.size() >= 3 && a.title.size() <= 160
+        && a.description is string && a.description.size() <= 1000
+        && a.questions is list && a.questions.size() >= 1 && a.questions.size() <= 30
+        && a.passingPercent is number && a.passingPercent >= 1 && a.passingPercent <= 100
+        && a.version is int
+        && a.status in ['active', 'archived'];
+    }
+
+    // ------------------------------------------------------------------ users
+    match /users/{userId} {
+      allow read: if signedIn() && (uid() == userId || isSuperAdmin());
+
+      // Student self-registration — only while the registration window is open (server time).
+      allow create: if signedIn() && uid() == userId && registrationOpen()
+        && newData().keys().hasOnly(['email', 'role', 'status', 'displayName', 'nameLower', 'profileComplete',
+                                     'createdAt', 'updatedAt'])
+        && newData().role == 'student'
+        && newData().status == 'active'
+        && newData().email == request.auth.token.email
+        && newData().profileComplete == false
+        && newData().createdAt == request.time;
+
+      // Super Admin creates a department admin, claiming the EMPTY department slot in the same batch.
+      allow create: if isSuperAdmin() && userId != uid()
+        && newData().keys().hasOnly(['email', 'role', 'status', 'displayName', 'nameLower', 'departmentId',
+                                     'mustChangePassword', 'createdAt', 'createdBy', 'createdByName',
+                                     'updatedAt', 'updatedBy'])
+        && newData().role == 'admin'
+        && newData().status == 'active'
+        && newData().mustChangePassword == true
+        && newData().createdBy == uid()
+        && newData().createdAt == request.time
+        && deptData(newData().departmentId).status == 'active'
+        && deptData(newData().departmentId).adminUid == null
+        && getAfter(path('departments', newData().departmentId)).data.adminUid == userId;
+
+      // Student edits their own profile. Role, status and email can never change.
+      allow update: if signedIn() && uid() == userId
+        && oldData().role == 'student'
+        && oldData().get('status', 'active') == 'active'
+        && onlyChanged(['profile', 'profileComplete', 'displayName', 'nameLower', 'activeProgramId',
+                        'latestResult', 'hasCareerResult', 'hasPhoto', 'updatedAt', 'lastLoginAt'])
+        && newData().updatedAt == request.time;
+
+      // Admin / Super Admin own doc: finish the forced password change (one way), rename, login stamp.
+      allow update: if signedIn() && uid() == userId
+        && oldData().role in ['admin', 'superadmin']
+        && oldData().get('status', '') == 'active'
+        && onlyChanged(['mustChangePassword', 'passwordChangedAt', 'displayName', 'nameLower',
+                        'lastLoginAt', 'updatedAt'])
+        && !(newData().get('mustChangePassword', false) == true && oldData().get('mustChangePassword', false) == false)
+        && newData().updatedAt == request.time;
+
+      // Super Admin disables / re-enables / renames an admin. The department slot must stay
+      // consistent in the same batch: active ⇔ holds the slot.
+      allow update: if isSuperAdmin() && userId != uid()
+        && oldData().role == 'admin'
+        && onlyChanged(['status', 'displayName', 'nameLower', 'disabledAt', 'disabledBy', 'updatedAt', 'updatedBy'])
+        && newData().status in ['active', 'disabled']
+        && newData().updatedBy == uid()
+        && newData().updatedAt == request.time
+        && ((newData().status == 'active'
+              && getAfter(path('departments', oldData().departmentId)).data.adminUid == userId)
+         || (newData().status == 'disabled'
+              && getAfter(path('departments', oldData().departmentId)).data.adminUid != userId));
+
+      allow delete: if false;
+    }
+
+    match /userPhotos/{userId} {
+      allow read: if signedIn() && (uid() == userId || isSuperAdmin());
+      allow create, update: if signedIn() && uid() == userId
+        && newData().keys().hasOnly(['dataUri', 'updatedAt'])
+        && newData().dataUri is string && newData().dataUri.size() <= 150000
+        && newData().updatedAt == request.time;
+      allow delete: if signedIn() && uid() == userId;
+    }
+
+    // ------------------------------------------------------------------ departments (one admin slot each)
+    match /departments/{deptId} {
+      allow read: if signedIn();
+
+      allow create: if isSuperAdmin() && createStamp()
+        && newData().keys().hasOnly(['name', 'code', 'description', 'color', 'order', 'status',
+                                     'adminUid', 'adminName', 'adminEmail',
+                                     'createdAt', 'createdBy', 'createdByName', 'updatedAt', 'updatedBy', 'updatedByName'])
+        && newData().name is string && newData().name.size() >= 3 && newData().name.size() <= 120
+        && newData().code is string && newData().code.size() >= 2 && newData().code.size() <= 12
+        && newData().status == 'active'
+        && newData().adminUid == null;
+
+      allow update: if isSuperAdmin() && updateStamp() && (
+          // details or archive/restore (archiving requires an empty slot)
+          (onlyChanged(['name', 'code', 'description', 'color', 'order', 'status',
+                        'updatedAt', 'updatedBy', 'updatedByName'])
+            && newData().status in ['active', 'archived']
+            && (newData().status == 'active' || newData().adminUid == null))
+          // claim the empty slot for a new / re-enabled admin
+       || (onlyChanged(['adminUid', 'adminName', 'adminEmail', 'updatedAt', 'updatedBy', 'updatedByName'])
+            && oldData().status == 'active'
+            && oldData().adminUid == null && newData().adminUid != null
+            && getAfter(path('users', newData().adminUid)).data.role == 'admin'
+            && getAfter(path('users', newData().adminUid)).data.departmentId == deptId
+            && getAfter(path('users', newData().adminUid)).data.status == 'active')
+          // release the slot when its admin is disabled
+       || (onlyChanged(['adminUid', 'adminName', 'adminEmail', 'updatedAt', 'updatedBy', 'updatedByName'])
+            && oldData().adminUid != null && newData().adminUid == null
+            && getAfter(path('users', oldData().adminUid)).data.status == 'disabled')
+          // keep the shown admin name in sync after a rename
+       || (onlyChanged(['adminName', 'updatedAt', 'updatedBy', 'updatedByName'])
+            && oldData().adminUid != null));
+
+      // The department's own admin may keep their displayed name in sync after renaming themselves.
+      allow update: if isActiveAdmin() && myDept() == deptId && oldData().adminUid == uid()
+        && onlyChanged(['adminName', 'updatedAt', 'updatedBy', 'updatedByName'])
+        && newData().adminName == me().displayName
+        && newData().updatedBy == uid() && newData().updatedAt == request.time;
+
+      allow delete: if false;
+    }
+
+    // ------------------------------------------------------------------ department-owned content
+    match /programs/{programId} {
+      allow read: if signedIn() && (resource.data.status == 'active' || isStaff());
+      allow create: if isDeptOwner(newData().departmentId)
+        && newData().status == 'active' && validProgram(newData()) && createStamp();
+      allow update: if isDeptOwner(oldData().departmentId)
+        && newData().departmentId == oldData().departmentId
+        && validProgram(newData()) && updateStamp();
+      allow delete: if isDeptOwner(oldData().departmentId) && oldData().status == 'archived';
+    }
+
+    match /careerQuestions/{questionId} {
+      function canManage(d) {
+        return (d.scope == 'department' && isDeptOwner(d.departmentId))
+            || (d.scope == 'system' && d.departmentId == null && isSuperAdmin());
+      }
+      allow read: if signedIn() && (resource.data.status == 'active' || isStaff());
+      allow create: if canManage(newData()) && newData().status == 'active'
+        && validQuestion(newData()) && createStamp();
+      allow update: if canManage(oldData())
+        && newData().scope == oldData().scope
+        && newData().departmentId == oldData().departmentId
+        && validQuestion(newData()) && updateStamp();
+      allow delete: if canManage(oldData()) && oldData().status == 'archived';
+    }
+
+    match /programAssessments/{assessmentId} {
+      allow read: if signedIn() && (resource.data.status == 'active' || isStaff());
+      allow create: if isDeptOwner(newData().departmentId)
+        && programData(newData().programId).departmentId == newData().departmentId
+        && newData().status == 'active' && validAssessment(newData()) && createStamp();
+      allow update: if isDeptOwner(oldData().departmentId)
+        && newData().departmentId == oldData().departmentId
+        && newData().programId == oldData().programId
+        && validAssessment(newData()) && updateStamp();
+      allow delete: if isDeptOwner(oldData().departmentId) && oldData().status == 'archived';
+    }
+
+    // ------------------------------------------------------------------ student results
+    match /careerResults/{resultId} {
+      allow read: if signedIn() && (
+           resource.data.userId == uid()
+        || isSuperAdmin()
+        || (isActiveAdmin() && myDept() in resource.data.topDepartmentIds));
+
+      allow create: if isStudent()
+        && newData().userId == uid()
+        && newData().completedAt == request.time
+        && newData().isLatest == true
+        && newData().scoringVersion is int
+        && newData().topProgramIds is list
+        && newData().topProgramIds.size() >= 1 && newData().topProgramIds.size() <= 3
+        && newData().topDepartmentIds is list && newData().topDepartmentIds.size() <= 3
+        && newData().bestProgramId == newData().topProgramIds[0]
+        && newData().bestDepartmentId == programData(newData().bestProgramId).departmentId
+        && newData().bestDepartmentId in newData().topDepartmentIds;
+
+      // Students only flip isLatest when a newer result replaces it (or an older one is promoted).
+      allow update: if signedIn() && oldData().userId == uid() && onlyChanged(['isLatest']);
+      allow delete: if signedIn() && oldData().userId == uid();
+    }
+
+    match /programAssessmentAttempts/{attemptId} {
+      allow read: if signedIn() && (
+           resource.data.userId == uid()
+        || isSuperAdmin()
+        || (isActiveAdmin() && resource.data.departmentId == myDept()));
+
+      allow create: if isStudent()
+        && newData().userId == uid()
+        && newData().completedAt == request.time
+        && get(path('programAssessments', newData().assessmentId)).data.programId == newData().programId
+        && get(path('programAssessments', newData().assessmentId)).data.passingPercent == newData().passingPercent
+        && programData(newData().programId).departmentId == newData().departmentId
+        && newData().scorePercent is number
+        && newData().scorePercent >= 0 && newData().scorePercent <= 100
+        && newData().isFit == (newData().scorePercent >= newData().passingPercent);
+
+      allow update: if false;
+      allow delete: if signedIn() && oldData().userId == uid();
+    }
+
+    match /studentProgress/{progressId} {
+      // The owner is encoded in the id ({uid}__{programId}) so a get() of a missing doc is allowed.
+      function ownerOf() { return progressId.split('__')[0]; }
+
+      allow read: if signedIn() && (
+           ownerOf() == uid()
+        || isSuperAdmin()
+        || (isActiveAdmin() && resource.data.departmentId == myDept()));
+
+      allow create, update: if isStudent()
+        && ownerOf() == uid()
+        && progressId == uid() + '__' + newData().programId
+        && newData().userId == uid()
+        && newData().departmentId == programData(newData().programId).departmentId
+        && newData().percent is number && newData().percent >= 0 && newData().percent <= 100
+        && newData().updatedAt == request.time;
+
+      allow delete: if signedIn() && ownerOf() == uid();
+    }
+
+    // ------------------------------------------------------------------ settings
+    match /settings/registration {
+      allow read: if true; // the Android app needs it before sign-up
+      allow create, update: if isSuperAdmin()
+        && newData().keys().hasOnly(['enabled', 'opensAt', 'closesAt', 'closedMessage',
+                                     'updatedAt', 'updatedBy', 'updatedByName'])
+        && newData().enabled is bool
+        && (newData().opensAt == null || newData().opensAt is timestamp)
+        && (newData().closesAt == null || newData().closesAt is timestamp)
+        && (newData().opensAt == null || newData().closesAt == null || newData().opensAt < newData().closesAt)
+        && (newData().closedMessage == null || (newData().closedMessage is string && newData().closedMessage.size() <= 500))
+        && newData().updatedBy == uid()
+        && newData().updatedAt == request.time;
+    }
+
+    match /settings/catalog {
+      allow read: if signedIn();
+      allow update: if isStaff()
+        && onlyChanged(['updatedAt', 'updatedBy'])
+        && newData().updatedAt == request.time
+        && newData().updatedBy == uid();
+    }
+
+    match /settings/app {
+      allow read: if isStaff();
+      allow update: if isSuperAdmin() && newData().updatedAt == request.time;
+    }
+
+    match /settings/system {
+      allow read: if isSuperAdmin();
+      allow write: if false;
+    }
+
+    // ------------------------------------------------------------------ audit trail (append-only)
+    match /auditLogs/{logId} {
+      allow read: if isSuperAdmin() || (isActiveAdmin() && resource.data.departmentId == myDept());
+      allow create: if signedIn()
+        && newData().keys().hasOnly(['actorUid', 'actorName', 'actorRole', 'action', 'targetType', 'targetId',
+                                     'targetLabel', 'departmentId', 'details', 'createdAt'])
+        && newData().actorUid == uid()
+        && newData().createdAt == request.time
+        && (isSuperAdmin()
+            || (isActiveAdmin() && newData().departmentId == myDept())
+            || (newData().action == 'admin.password_changed' && newData().targetId == uid()
+                && hasMe() && me().role == 'admin' && newData().departmentId == myDept()));
+      allow update, delete: if false;
+    }
+
+    // Everything else — including the v1 collections (courses, quizQuestions, assessments,
+    // courseProgress, programAssessmentCompletions) — is denied by default.
+  }
+}
