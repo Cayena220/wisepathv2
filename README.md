@@ -10,7 +10,7 @@ Course recommendation and academic progress system for incoming college students
 | Security rules | Firestore rules, indexes, rules tests | `firebase/` |
 | Admin scripts | Super Admin bootstrap, seed, migration | `scripts/` |
 
-Backend: Firebase **Spark (free) plan** — Authentication + Cloud Firestore (project `wisepath-v2`). The website is hosted on **Vercel**. No Cloud Functions are needed.
+Backend: Firebase **Spark (free) plan** — Authentication + Cloud Firestore (project `wisepath-44ff8`). The website is hosted on **Vercel**. No Cloud Functions are needed.
 
 ---
 
@@ -69,7 +69,9 @@ Test logins (emulator only) are listed in `scripts/src/fixtures.ts`: the Super A
 
 ---
 
-## Production setup (Firebase project `wisepath-v2`)
+## Production setup (Firebase project `wisepath-44ff8`)
+
+> v1's data lives in the older project `wisepath-v2`. v2 runs on a fresh project, so the migration step below is only needed if you ever move v1 data into the same project.
 
 1. **Config files**
    - `apps/admin-web/.env.local` — copy from `.env.example` (Web app config, `VITE_FIREBASE_*`) for local runs. On Vercel the same `VITE_FIREBASE_*` values are set as project environment variables.

@@ -21,7 +21,7 @@
     "seed": "npm run seed -w @wisepath/scripts --",
     "migrate": "npm run migrate -w @wisepath/scripts --",
     "demo": "npm run demo -w @wisepath/scripts --",
-    "deploy:rules": "firebase deploy --only firestore:rules,firestore:indexes --project wisepath-v2",
+    "deploy:rules": "firebase deploy --only firestore:rules,firestore:indexes --project wisepath-44ff8",
     "deploy:web": "npx vercel@64.5.0 deploy --prod",
     "dev:emulator": "npm run dev:emulator -w @wisepath/admin-web"
   },

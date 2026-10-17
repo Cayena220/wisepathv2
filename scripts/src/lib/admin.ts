@@ -4,7 +4,7 @@ import { cert, initializeApp, type App } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { FieldValue, getFirestore, Timestamp } from 'firebase-admin/firestore';
 
-export const EXPECTED_PROJECT = 'wisepath-v2';
+export const EXPECTED_PROJECT = 'wisepath-44ff8';
 export const EMULATOR_PROJECT = 'demo-wisepath';
 
 export interface Args {
@@ -26,6 +26,18 @@ export const parseArgs = (argv = process.argv.slice(2)): Args => {
   }
   return { flags, values };
 };
+
+// Print only code + message on failure: full Firebase errors include request headers and bodies.
+const fail = (error: unknown) => {
+  const e = error as { code?: string; message?: string };
+  console.error(`\n✖ ${e.code ? `${e.code}: ` : ''}${(e.message ?? String(error)).split('\n')[0]}`);
+  if (e.code === 'auth/configuration-not-found') {
+    console.error('  Firebase Authentication is not set up: Console → Authentication → Get started → enable Email/Password.');
+  }
+  process.exit(1);
+};
+process.on('unhandledRejection', fail);
+process.on('uncaughtException', fail);
 
 export const args = parseArgs();
 export const isEmulator = args.flags.has('emulator');
