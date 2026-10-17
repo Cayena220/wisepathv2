@@ -4,11 +4,11 @@ import { connectFirestoreEmulator, initializeFirestore } from 'firebase/firestor
 import { Platform } from 'react-native';
 import { authPersistence } from './authPersistence';
 
-const env = process.env;
-
-export const useEmulators = env.EXPO_PUBLIC_USE_EMULATORS === 'true';
+// Write each variable out in full as process.env.EXPO_PUBLIC_…: release builds replace only those exact
+// references with the .env values (an alias like `const env = process.env` stays empty in the APK).
+export const useEmulators = process.env.EXPO_PUBLIC_USE_EMULATORS === 'true';
 // 10.0.2.2 is the Android emulator's alias for this computer; the browser preview runs on it directly.
-const emulatorHost = env.EXPO_PUBLIC_EMULATOR_HOST || (Platform.OS === 'web' ? 'localhost' : '10.0.2.2');
+const emulatorHost = process.env.EXPO_PUBLIC_EMULATOR_HOST || (Platform.OS === 'web' ? 'localhost' : '10.0.2.2');
 
 const firebaseConfig = useEmulators
   ? {
@@ -18,12 +18,12 @@ const firebaseConfig = useEmulators
       appId: '1:000000000000:android:demo',
     }
   : {
-      apiKey: env.EXPO_PUBLIC_FIREBASE_API_KEY,
-      authDomain: env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
-      projectId: env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
-      storageBucket: env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
-      messagingSenderId: env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-      appId: env.EXPO_PUBLIC_FIREBASE_APP_ID,
+      apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+      authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+      storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+      appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
     };
 
 export const isFirebaseConfigured = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId);
