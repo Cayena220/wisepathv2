@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Download WisePath</title>
+  <meta name="description" content="WisePath is a smart course recommendation app for incoming college students. Download the Android app.">
+  <meta name="theme-color" content="#FFFDF8">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Download WisePath for Android">
+  <meta property="og:description" content="Take a career assessment, see your top three program matches, and track your academic progress.">
+  <meta property="og:image" content="https://wisepath-download.vercel.app/logo.jpg">
+  <meta property="og:url" content="https://wisepath-download.vercel.app/">
+  <link rel="icon" href="logo.jpg" type="image/jpeg">
+  <link rel="apple-touch-icon" href="logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Tokens mirror utils/theme.ts in the WisePath app */
+    :root {
+      --parchment: #FFFDF8;
+      --parchment-deep: #F6F1E6;
+      --white: #FFFFFF;
+      --ink: #1F3350;
+      --ink-soft: #5B6E85;
+      --gold: #C2872E;
+      --gold-strong: #A9721F;
+      --gold-soft: #F3E4C4;
+      --teal: #3E7A6C;
+      --teal-soft: #DCEAE3;
+      --line: rgba(31, 51, 80, 0.12);
+      --line-strong: rgba(31, 51, 80, 0.2);
+      --r-md: 8px;
+      --r-lg: 12px;
+      --r-xl: 16px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 8px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 30px rgba(31,51,80,0.14);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--parchment) 0%, var(--parchment-deep) 55%, var(--parchment-deep) 100%);
+      background-color: var(--parchment);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    img, svg { display: block; max-width: 100%; }
+    a { color: inherit; }
+
+    .wrap { width: 100%; max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+    /* Decorative blobs, same as the app's DecorativeBlobs */
+    .blobs { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+    .blob-teal { position: absolute; top: -140px; right: -120px; width: 380px; height: 380px; border-radius: 50%; background: var(--teal); opacity: 0.11; }
+    .blob-parch { position: absolute; top: 560px; left: -160px; width: 360px; height: 360px; border-radius: 50%; background: var(--gold-soft); opacity: 0.5; }
+    .dots { position: absolute; top: 150px; right: 14%; opacity: 0.35; }
+
+    /* Header */
+    header { position: relative; z-index: 2; }
+    .nav { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 800; font-size: 18px; letter-spacing: 0.02em; }
+    .brand img { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--white); object-fit: cover; }
+    .brand .w { color: var(--ink); }
+    .brand .p { color: var(--gold); }
+    .nav-link { font-size: 14px; font-weight: 600; color: var(--gold); text-decoration: none; padding: 8px 14px; border: 1.5px solid var(--gold); border-radius: var(--r-lg); background: var(--white); }
+    .nav-link:hover { background: var(--gold-soft); }
+    .nav-links { display: flex; align-items: center; gap: 8px; }
+    .nav-link-quiet { color: var(--ink); border-color: var(--line-strong); }
+    .nav-link-quiet:hover { background: var(--parchment-deep); }
+
+    main { position: relative; z-index: 1; }
+
+    /* Hero */
+    .hero { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px; align-items: center; padding: 40px 0 72px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--teal); background: var(--teal-soft); padding: 6px 12px; border-radius: 999px; }
+    .eyebrow svg { width: 16px; height: 16px; }
+    h1 { font-size: clamp(34px, 5.4vw, 54px); line-height: 1.08; letter-spacing: -0.02em; font-weight: 800; margin: 18px 0 16px; }
+    h1 em { font-style: normal; color: var(--gold); }
+    .lead { font-size: 18px; color: var(--ink-soft); max-width: 34em; margin: 0 0 28px; }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      min-height: 52px; padding: 12px 22px; border-radius: var(--r-lg);
+      font: inherit; font-size: 16px; font-weight: 700; text-decoration: none; cursor: pointer;
+      transition: transform 0.12s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn:focus-visible, .nav-link:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
+    .btn-primary { background: var(--gold); color: var(--white); box-shadow: 0 6px 16px rgba(194,135,46,0.28); }
+    .btn-primary:hover { background: var(--gold-strong); }
+    .btn-primary svg { width: 22px; height: 22px; }
+    .btn-primary .meta { font-weight: 500; font-size: 13px; opacity: 0.9; padding-left: 10px; border-left: 1px solid rgba(255,255,255,0.4); }
+    .btn-outline { background: var(--white); color: var(--gold); border: 1.5px solid var(--gold); }
+    .btn-outline:hover { background: var(--gold-soft); }
+    .fine { font-size: 13px; color: var(--ink-soft); margin: 14px 0 0; }
+    .ios-note { display: none; margin-top: 16px; font-size: 14px; color: var(--ink); background: var(--gold-soft); border-radius: var(--r-lg); padding: 12px 14px; max-width: 30em; }
+    .is-ios .ios-note { display: block; }
+
+    /* Phone mockup */
+    .phone-stage { display: flex; justify-content: center; }
+    /* Android-style handset: thin even bezel, punch-hole camera, side keys, 3-button nav */
+    .phone {
+      width: 290px; border-radius: 30px; padding: 8px; background: var(--ink); position: relative;
+      box-shadow: var(--shadow-lg), inset 0 0 0 2px rgba(255,255,255,0.06);
+      transform: rotate(2deg);
+    }
+    .phone::before, .phone::after { content: ""; position: absolute; right: -4px; width: 4px; background: var(--ink); border-radius: 0 3px 3px 0; }
+    .phone::before { top: 110px; height: 38px; }
+    .phone::after { top: 170px; height: 70px; }
+    .screen { border-radius: 23px; overflow: hidden; background: linear-gradient(180deg, var(--parchment), var(--parchment-deep)); position: relative; }
+    .statusbar { display: flex; align-items: center; justify-content: space-between; height: 30px; padding: 0 18px; font-size: 11px; font-weight: 600; color: var(--ink); position: relative; }
+    .statusbar .cam { position: absolute; left: 50%; top: 9px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--ink); box-shadow: inset 0 0 0 2.5px #2c4566; }
+    .statusbar .sys { display: flex; align-items: center; gap: 4px; }
+    .statusbar svg { width: 13px; height: 13px; }
+    .scr-body { padding: 8px 16px 14px; }
+    .navbar { display: flex; align-items: center; justify-content: space-around; height: 38px; padding: 0 40px; color: var(--ink-soft); border-top: 1px solid var(--line); background: rgba(255,255,255,0.5); }
+    .navbar svg { width: 15px; height: 15px; }
+    .scr-hi { font-size: 12px; color: var(--ink-soft); margin: 0; }
+    .scr-title { font-size: 17px; font-weight: 800; margin: 2px 0 14px; }
+    .match-card { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-xl); padding: 14px; display: flex; gap: 14px; align-items: center; box-shadow: var(--shadow-sm); }
+    .ring { width: 64px; height: 64px; flex: none; position: relative; }
+    .ring span { position: absolute; inset: 0; display: grid; place-items: center; font-weight: 800; font-size: 15px; }
+    .tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--gold-strong); background: var(--gold-soft); border-radius: 999px; padding: 2px 8px; }
+    .match-name { font-size: 13px; font-weight: 700; margin: 6px 0 0; line-height: 1.3; }
+    .rank-list { margin: 12px 0 0; padding: 0; list-style: none; background: var(--white); border: 1px solid var(--line); border-radius: var(--r-xl); }
+    .rank-list li { display: flex; align-items: center; gap: 10px; padding: 11px 14px; font-size: 12px; font-weight: 600; }
+    .rank-list li + li { border-top: 1px solid var(--line); }
+    .rank-num { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 800; background: var(--teal-soft); color: var(--teal); flex: none; }
+    .rank-list .pct { margin-left: auto; color: var(--ink-soft); font-weight: 500; }
+    .progress { margin-top: 12px; background: var(--white); border: 1px solid var(--line); border-radius: var(--r-xl); padding: 12px 14px; font-size: 12px; font-weight: 600; }
+    .bar { height: 8px; border-radius: 99px; background: var(--teal-soft); margin-top: 8px; overflow: hidden; }
+    .bar i { display: block; height: 100%; width: 64%; background: var(--teal); border-radius: 99px; }
+    .scr-btn { margin-top: 14px; background: var(--gold); color: var(--white); text-align: center; font-weight: 700; font-size: 13px; border-radius: var(--r-lg); padding: 11px; }
+
+    /* Sections */
+    section { padding: 64px 0; }
+    .section-head { max-width: 40em; margin-bottom: 32px; }
+    .kicker { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--teal); margin: 0 0 8px; }
+    h2 { font-size: clamp(26px, 3.4vw, 34px); line-height: 1.2; letter-spacing: -0.01em; font-weight: 800; margin: 0 0 10px; }
+    .section-head p { color: var(--ink-soft); margin: 0; font-size: 16px; }
+
+    .features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .card { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-xl); padding: 22px; box-shadow: var(--shadow-sm); }
+    .icon { width: 44px; height: 44px; border-radius: var(--r-lg); display: grid; place-items: center; margin-bottom: 14px; }
+    .icon svg { width: 22px; height: 22px; }
+    .icon.gold { background: var(--gold-soft); color: var(--gold-strong); }
+    .icon.teal { background: var(--teal-soft); color: var(--teal); }
+    .card h3 { font-size: 16px; font-weight: 700; margin: 0 0 6px; }
+    .card p { font-size: 14px; color: var(--ink-soft); margin: 0; }
+
+    /* Install */
+    .install { display: grid; grid-template-columns: 1fr 340px; gap: 24px; align-items: start; }
+    .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; counter-reset: step; }
+    .steps li { counter-increment: step; display: flex; gap: 16px; align-items: flex-start; background: var(--white); border: 1px solid var(--line); border-radius: var(--r-xl); padding: 18px 20px; }
+    .steps li::before { content: counter(step); flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--gold); color: var(--white); font-weight: 800; display: grid; place-items: center; font-size: 15px; }
+    .steps h3 { margin: 4px 0 4px; font-size: 16px; }
+    .steps p { margin: 0; font-size: 14px; color: var(--ink-soft); }
+    .steps b { color: var(--ink); font-weight: 600; }
+
+    .qr-card { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-xl); padding: 24px; text-align: center; box-shadow: var(--shadow-md); }
+    .qr-card h3 { margin: 0 0 4px; font-size: 17px; }
+    .qr-card p { margin: 0 0 16px; font-size: 14px; color: var(--ink-soft); }
+    .qr-frame { width: 200px; margin: 0 auto 18px; padding: 10px; border-radius: var(--r-lg); border: 1.5px solid var(--gold-soft); background: var(--white); }
+    .qr-card .btn { width: 100%; }
+
+    .note { margin-top: 16px; display: flex; gap: 12px; align-items: flex-start; font-size: 14px; color: var(--ink); background: var(--teal-soft); border-radius: var(--r-lg); padding: 14px 16px; }
+    .note svg { flex: none; width: 20px; height: 20px; color: var(--teal); margin-top: 1px; }
+
+    footer { border-top: 1px solid var(--line); padding: 28px 0 40px; font-size: 13px; color: var(--ink-soft); position: relative; z-index: 1; }
+    .foot { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: center; }
+    .foot .brand { font-size: 15px; }
+    .foot .brand img { width: 30px; height: 30px; border-radius: 8px; }
+
+    @media (max-width: 920px) {
+      .features { grid-template-columns: repeat(2, 1fr); }
+      .install { grid-template-columns: 1fr; }
+      .qr-card { max-width: 420px; }
+    }
+    @media (max-width: 760px) {
+      .hero { grid-template-columns: 1fr; gap: 40px; padding: 24px 0 48px; }
+      .phone { transform: none; width: 270px; }
+      section { padding: 44px 0; }
+      .dots { display: none; }
+    }
+    @media (max-width: 520px) {
+      .wrap { padding: 0 16px; }
+      .features { grid-template-columns: 1fr; }
+      .actions .btn { width: 100%; }
+      .lead { font-size: 16px; }
+      .nav-link { padding: 7px 12px; }
+      .hide-sm { display: none; }
+    }
+    /* Phones are already the target device, so the QR code is only useful on larger screens */
+    @media (max-width: 520px), (pointer: coarse) and (max-width: 920px) {
+      .qr-frame, .qr-hint { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .btn { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="blobs" aria-hidden="true">
+    <div class="blob-teal"></div>
+    <div class="blob-parch"></div>
+    <svg class="dots" width="60" height="50" viewBox="0 0 60 50"><circle cx="30" cy="8" r="6" fill="#C2872E"/><circle cx="52" cy="28" r="4" fill="#C2872E"/><circle cx="10" cy="34" r="5" fill="#C2872E"/></svg>
+  </div>
+
+  <header>
+    <div class="wrap nav">
+      <a class="brand" href="#top" aria-label="WisePath home">
+        <img src="logo.jpg" alt="" width="40" height="40">
+        <span><span class="w">WISE</span><span class="p">PATH</span></span>
+      </a>
+      <nav class="nav-links" aria-label="Main">
+        <a class="nav-link nav-link-quiet" href="https://wisepath-admin.vercel.app">Admin<span class="hide-sm"> sign-in</span></a>
+        <a class="nav-link" href="#download">Get the app</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="wrap hero">
+      <div>
+        <span class="eyebrow">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.6 9.48l1.84-3.18a.38.38 0 0 0-.66-.38l-1.86 3.22a11.4 11.4 0 0 0-9.84 0L5.22 5.92a.38.38 0 0 0-.66.38L6.4 9.48A10.8 10.8 0 0 0 1 18h22a10.8 10.8 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/></svg>
+          Android app · Version 2.0.0
+        </span>
+        <h1>Find the college program that <em>fits you.</em></h1>
+        <p class="lead">WisePath recommends courses for incoming college students. Take a career assessment, see your top three program matches, and track your progress, all from your phone.</p>
+        <div class="actions">
+          <a class="btn btn-primary js-apk" href="https://expo.dev/artifacts/eas/056K2Ajj_tbDXzMiQwfykiIRZfQZogKPRmAKEb5dIms.apk" download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+            Download for Android
+            <span class="meta">APK · 100 MB</span>
+          </a>
+          <a class="btn btn-outline" href="#install">How to install</a>
+        </div>
+        <p class="fine">Free · For Android phones and tablets</p>
+        <p class="ios-note" role="note">WisePath is only available for Android right now, so this file won't install on an iPhone or iPad.</p>
+      </div>
+
+      <div class="phone-stage" aria-hidden="true">
+        <div class="phone">
+          <div class="screen">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="cam"></span>
+              <span class="sys">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 20 1.5 8.6a15 15 0 0 1 21 0z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 22 22 2v20z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 2h6v2h2.5c.8 0 1.5.7 1.5 1.5v15c0 .8-.7 1.5-1.5 1.5h-11C5.7 22 5 21.3 5 20.5v-15C5 4.7 5.7 4 6.5 4H9z"/></svg>
+              </span>
+            </div>
+            <div class="scr-body">
+            <p class="scr-hi">Your results are in</p>
+            <p class="scr-title">Recommended programs</p>
+            <div class="match-card">
+              <div class="ring">
+                <svg viewBox="0 0 64 64" width="64" height="64">
+                  <circle cx="32" cy="32" r="27" fill="none" stroke="#F3E4C4" stroke-width="7"/>
+                  <circle cx="32" cy="32" r="27" fill="none" stroke="#C2872E" stroke-width="7" stroke-linecap="round" stroke-dasharray="156 170" transform="rotate(-90 32 32)"/>
+                </svg>
+                <span>92%</span>
+              </div>
+              <div>
+                <span class="tag">Top pick</span>
+                <p class="match-name">BS Information Technology</p>
+              </div>
+            </div>
+            <ul class="rank-list">
+              <li><span class="rank-num">2</span>BS Computer Science<span class="pct">85%</span></li>
+              <li><span class="rank-num">3</span>BS Computer Engineering<span class="pct">78%</span></li>
+            </ul>
+            <div class="progress">
+              Program progress
+              <div class="bar"><i></i></div>
+            </div>
+            <div class="scr-btn">View program details</div>
+            </div>
+            <div class="navbar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M17 4 6 12l11 8z"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="8"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="1.5"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <p class="kicker">What's inside</p>
+          <h2>From assessment to graduation plan</h2>
+          <p>WisePath helps you choose a program, then keeps track of where you are in it.</p>
+        </div>
+        <div class="features">
+          <div class="card">
+            <div class="icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg></div>
+            <h3>Career assessment</h3>
+            <p>Answer questions about your interests, goals, and strengths.</p>
+          </div>
+          <div class="card">
+            <div class="icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8z"/></svg></div>
+            <h3>Ranked matches</h3>
+            <p>See up to three programs ranked by fit, with a guidance summary.</p>
+          </div>
+          <div class="card">
+            <div class="icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg></div>
+            <h3>Program details</h3>
+            <p>Browse curriculum, skills, career paths, duration, and tuition estimates.</p>
+          </div>
+          <div class="card">
+            <div class="icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></div>
+            <h3>Progress tracking</h3>
+            <p>Follow your completed, ongoing, and remaining subjects.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="install">
+      <div class="wrap">
+        <div class="section-head" id="download">
+          <p class="kicker">Install</p>
+          <h2>Install WisePath in three steps</h2>
+          <p>WisePath is installed directly from an APK file instead of the Play Store, so Android will ask you to allow the install once.</p>
+        </div>
+        <div class="install">
+          <div>
+            <ol class="steps">
+              <li>
+                <div>
+                  <h3>Download the APK</h3>
+                  <p>On your Android phone, tap <b>Download for Android</b>. The file is about 100 MB, so Wi-Fi is a good idea.</p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h3>Open the file and allow the install</h3>
+                  <p>Open the downloaded file from your notifications or the <b>Files</b> app. If Android blocks it, tap <b>Settings</b>, turn on <b>Allow from this source</b>, then go back.</p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h3>Install and sign in</h3>
+                  <p>Tap <b>Install</b>, open WisePath, and create your student account to start your assessment.</p>
+                </div>
+              </li>
+            </ol>
+            <div class="note" role="note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>If Google Play Protect shows a warning, that's because the app isn't from the Play Store. Tap <b>More details</b>, then <b>Install anyway</b>.</span>
+            </div>
+          </div>
+
+          <aside class="qr-card">
+            <h3>Get WisePath</h3>
+            <p class="qr-hint">On a computer? Scan this code with your Android phone's camera.</p>
+            <div class="qr-frame">
+              <img src="qr.svg" alt="QR code that links to the WisePath APK download" width="180" height="180">
+            </div>
+            <a class="btn btn-primary js-apk" href="https://expo.dev/artifacts/eas/056K2Ajj_tbDXzMiQwfykiIRZfQZogKPRmAKEb5dIms.apk" download>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+              Download APK
+            </a>
+            <p class="fine">Version 2.0.0 · 100 MB · Android only</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <span class="brand">
+        <img src="logo.jpg" alt="" width="30" height="30">
+        <span><span class="w">WISE</span><span class="p">PATH</span></span>
+      </span>
+      <span>Academic capstone project · College of Information and Communications Technology, STI West Negros University · <a href="https://wisepath-admin.vercel.app" style="color: inherit; text-decoration: underline;">Admin sign-in</a></span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var ua = navigator.userAgent || '';
+      var isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      if (isIOS) document.documentElement.classList.add('is-ios');
+    })();
+  </script>
+</body>
+</html>
