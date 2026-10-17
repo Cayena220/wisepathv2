@@ -14,7 +14,7 @@ const config: ExpoConfig = {
   android: {
     package: 'com.wisepath.app',
     // Raise on every APK you hand out so it installs as an update (v1 used 2; 2.0's first builds used 3).
-    versionCode: 4,
+    versionCode: 5,
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#FFFFFF',

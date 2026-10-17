@@ -23,8 +23,9 @@ interface ErrorUtilsLike {
   setGlobalHandler(handler: GlobalHandler): void;
 }
 
-const listeners = new Set<(report: CrashReport) => void>();
-let lastReport: CrashReport | null = null;
+const listeners = new Set<() => void>();
+/** Every error reported since start (or since Try again). The first one is the root cause. */
+const reports: CrashReport[] = [];
 
 const toReport = (error: unknown): CrashReport => {
   const e = error instanceof Error ? error : new Error(typeof error === 'string' ? error : JSON.stringify(error));
@@ -32,8 +33,8 @@ const toReport = (error: unknown): CrashReport => {
 };
 
 const report = (error: unknown) => {
-  lastReport = toReport(error);
-  listeners.forEach((listener) => listener(lastReport!));
+  reports.push(toReport(error));
+  listeners.forEach((listener) => listener());
 };
 
 /** Routes fatal JS errors to the crash screen in release builds (development keeps the red error overlay). */
@@ -51,53 +52,68 @@ export function installCrashHandler() {
 let LoadedApp: React.ComponentType | null = null;
 const loadApp = () => {
   if (LoadedApp) return LoadedApp;
+  const before = reports.length;
   try {
-    LoadedApp = (require('./App') as { default: React.ComponentType }).default;
+    // In a release build Metro does not throw here: it hands a module's load error to ErrorUtils
+    // (reported above) and returns undefined, so check the result instead of reading .default blindly.
+    const mod = require('./App') as { default?: React.ComponentType } | undefined;
+    LoadedApp = mod?.default ?? null;
   } catch (error) {
     report(error);
   }
+  if (!LoadedApp && reports.length === before) report(new Error('The app module did not load, and no error was reported.'));
   return LoadedApp;
 };
 
 interface RootState {
-  crash: CrashReport | null;
+  failed: boolean;
+  crashes: CrashReport[];
 }
 
 /** App root: the WisePath app inside an error boundary, or the crash screen. */
 export class Root extends React.Component<object, RootState> {
-  state: RootState = { crash: null };
+  state: RootState = { failed: false, crashes: [] };
   private App = loadApp();
 
-  static getDerivedStateFromError(error: unknown): RootState {
-    return { crash: toReport(error) };
+  static getDerivedStateFromError(): Partial<RootState> {
+    return { failed: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    report(error);
   }
 
   componentDidMount() {
-    listeners.add(this.onCrash);
-    if (lastReport) this.setState({ crash: lastReport });
+    listeners.add(this.sync);
+    this.sync();
   }
 
   componentWillUnmount() {
-    listeners.delete(this.onCrash);
+    listeners.delete(this.sync);
   }
 
-  private onCrash = (crash: CrashReport) => this.setState({ crash });
+  private sync = () => {
+    if (reports.length !== this.state.crashes.length) this.setState({ crashes: [...reports] });
+  };
 
   private retry = () => {
-    lastReport = null;
+    reports.length = 0;
     this.App = loadApp();
-    this.setState({ crash: null });
+    this.setState({ failed: false, crashes: [...reports] });
   };
 
   render() {
-    const { crash } = this.state;
-    if (crash || !this.App) return <CrashScreen report={crash ?? lastReport ?? toReport('The app could not start.')} onRetry={this.retry} />;
+    const { failed, crashes } = this.state;
+    if (failed || crashes.length || !this.App) {
+      const shown = crashes.length ? crashes : reports.length ? [...reports] : [toReport('The app could not start.')];
+      return <CrashScreen crashes={shown} onRetry={this.retry} />;
+    }
     const App = this.App;
     return <App />;
   }
 }
 
-function CrashScreen({ report: crash, onRetry }: { report: CrashReport; onRetry: () => void }) {
+function CrashScreen({ crashes, onRetry }: { crashes: CrashReport[]; onRetry: () => void }) {
   React.useEffect(() => {
     // The native splash stays up until the app hides it; hide it so this screen is visible.
     try {
@@ -107,9 +123,10 @@ function CrashScreen({ report: crash, onRetry }: { report: CrashReport; onRetry:
     }
   }, []);
 
-  const details = `WisePath 2.0 error (${crash.when})\n${crash.message}\n\n${crash.stack}`;
+  const [first, ...later] = crashes;
+  const details = [`WisePath 2.0 error (${first.when})`, ...crashes.map((c, i) => `#${i + 1} ${c.message}\n${c.stack}`)].join('\n\n');
   // Hermes and V8 start the stack with the message itself; skip that line.
-  const stackLines = crash.stack.split('\n').filter((line, i) => !(i === 0 && line.trim() === crash.message));
+  const stackLines = first.stack.split('\n').filter((line, i) => !(i === 0 && line.trim() === first.message));
 
   return (
     <View style={styles.page}>
@@ -121,11 +138,16 @@ function CrashScreen({ report: crash, onRetry }: { report: CrashReport; onRetry:
         </Text>
         <View style={styles.card}>
           <Text style={styles.message} selectable>
-            {crash.message}
+            {first.message}
           </Text>
           {stackLines.length ? (
             <Text style={styles.stack} selectable>
               {stackLines.slice(0, 14).join('\n')}
+            </Text>
+          ) : null}
+          {later.length ? (
+            <Text style={styles.stack} selectable>
+              {later.map((c) => `Then: ${c.message}`).join('\n')}
             </Text>
           ) : null}
         </View>
