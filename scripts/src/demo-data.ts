@@ -24,7 +24,7 @@ import {
   type ProgramAssessment,
 } from '@wisepath/shared';
 import { args, auth, db, isEmulator, log, Timestamp } from './lib/admin';
-import { DEMO_STUDENT_PASSWORD } from './fixtures';
+import { DEMO_STUDENT_PASSWORD, EMULATOR_DEPT_ADMIN_PASSWORD } from './fixtures';
 
 if (!isEmulator) {
   console.error('demo-data only runs against the emulator (--emulator).');
@@ -151,6 +151,7 @@ for (let i = 0; i < count; i += 1) {
       isFit: score.isFit,
       completedAt: Timestamp.fromMillis(completedAt.toMillis() + 3_600_000),
     });
+    await db.doc(`users/${user.uid}`).update({ hasFitAttempt: true });
   }
 
   if (profile.studentStatus === 'current') {
@@ -180,5 +181,36 @@ for (let i = 0; i < count; i += 1) {
   log.ok(`${name.padEnd(22)} → ${best.programTitle} (${best.matchPercent}%)`);
 }
 
-console.log(`\nDemo students sign in with the password in scripts/src/fixtures.ts.`);
+// One ready-to-use admin per department (emulator only), e.g. ccit.admin@demo.wisepath.test
+log.title('Demo department admins');
+for (const dept of (await db.collection('departments').get()).docs) {
+  const code = String(dept.get('code'));
+  if (dept.get('adminUid')) {
+    log.info(`${code} already has an admin`);
+    continue;
+  }
+  const email = `${code.toLowerCase()}.admin@demo.wisepath.test`;
+  const name = `${code} Admin`;
+  const user = await auth.getUserByEmail(email).catch(() => auth.createUser({ email, password: EMULATOR_DEPT_ADMIN_PASSWORD, displayName: name }));
+  const batch = db.batch();
+  batch.set(db.doc(`users/${user.uid}`), {
+    email,
+    role: 'admin',
+    status: 'active',
+    displayName: name,
+    nameLower: name.toLowerCase(),
+    departmentId: dept.id,
+    mustChangePassword: false,
+    createdAt: Timestamp.now(),
+    createdBy: 'demo-data',
+    createdByName: 'Demo data',
+    updatedAt: Timestamp.now(),
+    updatedBy: 'demo-data',
+  });
+  batch.update(dept.ref, { adminUid: user.uid, adminName: name, adminEmail: email });
+  await batch.commit();
+  log.ok(email);
+}
+
+console.log(`\nDemo students and admins sign in with the passwords in scripts/src/fixtures.ts.`);
 process.exit(0);

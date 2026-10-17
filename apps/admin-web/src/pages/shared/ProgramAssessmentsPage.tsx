@@ -1,5 +1,6 @@
 import {
   LIMITS,
+  computeQuestionAnalytics,
   formatDate,
   shortId,
   type ProgramAssessment,
@@ -32,6 +33,8 @@ import {
   usePrograms,
 } from '@/lib/data/catalog';
 import { errorMessage } from '@/lib/utils';
+import { QuestionAnalysisCard } from '@/components/analytics/widgets';
+import { useAssessmentAttempts } from '@/lib/data/analytics';
 import { AttemptsTable } from './ResultsPage';
 
 const canEdit = (role: string | null, departmentId: string | null | undefined, a: Pick<ProgramAssessment, 'departmentId'>) =>
@@ -126,6 +129,8 @@ export function ProgramAssessmentDetailPage() {
   const { data: a, isLoading, error } = useProgramAssessment(assessmentId);
   const programs = usePrograms(null);
   const [confirm, setConfirm] = React.useState<'archive' | 'restore' | 'delete' | null>(null);
+  const canSeeAttempts = Boolean(a) && (isSuperAdmin || a?.departmentId === actor.departmentId);
+  const attemptsForAnalysis = useAssessmentAttempts(assessmentId, actor.departmentId, isSuperAdmin, canSeeAttempts);
 
   if (isLoading) return <Skeleton className="h-96 rounded-xl" />;
   if (error || !a) return <ErrorState error={error ?? new Error('Assessment not found.')} />;
@@ -232,6 +237,13 @@ export function ProgramAssessmentDetailPage() {
           )}
         </Card>
       </div>
+      {canSeeAttempts && (
+        <QuestionAnalysisCard
+          className="mt-6"
+          questions={computeQuestionAnalytics(a, attemptsForAnalysis.data ?? [])}
+          attempts={attemptsForAnalysis.data?.length ?? 0}
+        />
+      )}
       <AlertDialog open={Boolean(confirm)} onOpenChange={(open) => !open && setConfirm(null)}>
         <AlertDialogContent>
           <AlertDialogTitle>{confirm === 'delete' ? 'Delete' : confirm === 'archive' ? 'Archive' : 'Restore'} “{a.title}”?</AlertDialogTitle>

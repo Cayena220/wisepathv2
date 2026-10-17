@@ -141,7 +141,7 @@ service cloud.firestore {
         && oldData().role == 'student'
         && oldData().get('status', 'active') == 'active'
         && onlyChanged(['profile', 'profileComplete', 'displayName', 'nameLower', 'activeProgramId',
-                        'latestResult', 'hasCareerResult', 'hasPhoto', 'updatedAt', 'lastLoginAt'])
+                        'latestResult', 'hasCareerResult', 'hasFitAttempt', 'hasPhoto', 'updatedAt', 'lastLoginAt'])
         && newData().updatedAt == request.time;
 
       // Admin / Super Admin own doc: finish the forced password change (one way), rename, login stamp.

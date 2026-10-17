@@ -1,5 +1,6 @@
 import { initials } from '@wisepath/shared';
 import {
+  BarChart3,
   Building2,
   ChevronRight,
   ClipboardCheck,
@@ -43,7 +44,13 @@ interface NavItem {
 }
 
 const SUPER_NAV: { group: string; items: NavItem[] }[] = [
-  { group: 'Overview', items: [{ to: '/overview', label: 'Overview', icon: LayoutDashboard }] },
+  {
+    group: 'Overview',
+    items: [
+      { to: '/overview', label: 'Overview', icon: LayoutDashboard },
+      { to: '/analytics', label: 'Analytics', icon: BarChart3 },
+    ],
+  },
   {
     group: 'Administration',
     items: [
@@ -71,7 +78,13 @@ const SUPER_NAV: { group: string; items: NavItem[] }[] = [
 ];
 
 const ADMIN_NAV: { group: string; items: NavItem[] }[] = [
-  { group: 'Overview', items: [{ to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard }] },
+  {
+    group: 'Overview',
+    items: [
+      { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { to: '/analytics', label: 'Analytics', icon: BarChart3 },
+    ],
+  },
   { group: 'Students', items: [{ to: '/results', label: 'Results', icon: Trophy }] },
   {
     group: 'My department',
@@ -186,6 +199,7 @@ function UserMenu() {
 
 const SEGMENT_LABELS: Record<string, string> = {
   overview: 'Overview',
+  analytics: 'Analytics',
   dashboard: 'Dashboard',
   departments: 'Departments',
   admins: 'Admins',

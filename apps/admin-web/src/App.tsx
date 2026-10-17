@@ -11,6 +11,7 @@ import { ChangePasswordPage } from '@/pages/auth/ChangePasswordPage';
 import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage';
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { AccountPage } from '@/pages/shared/AccountPage';
+import { AnalyticsPage } from '@/pages/shared/AnalyticsPage';
 import { AttemptDetailPage } from '@/pages/shared/AttemptDetailPage';
 import { AuditLogPage } from '@/pages/shared/AuditLogPage';
 import { CareerQuestionsPage } from '@/pages/shared/CareerQuestionsPage';
@@ -62,6 +63,7 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <HomeRedirect /> },
           // shared (both roles; data is scoped by role)
+          { path: 'analytics', element: <AnalyticsPage /> },
           { path: 'results', element: <ResultsPage /> },
           { path: 'results/:resultId', element: <ResultDetailPage /> },
           { path: 'attempts/:attemptId', element: <AttemptDetailPage /> },

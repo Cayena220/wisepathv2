@@ -267,7 +267,8 @@ export const submitProgramAssessment = async (input: {
 }) => {
   const score = scoreProgramAssessment(input.assessment, input.answers);
   const ref = doc(collection(db, 'programAssessmentAttempts'));
-  await setDoc(ref, {
+  const batch = writeBatch(db);
+  batch.set(ref, {
     userId: input.uid,
     studentName: input.account.profile?.name || input.account.displayName,
     studentEmail: input.account.email,
@@ -283,6 +284,10 @@ export const submitProgramAssessment = async (input: {
     isFit: score.isFit,
     completedAt: serverTimestamp(),
   });
+  if (!input.account.hasFitAttempt) {
+    batch.update(doc(db, 'users', input.uid), { hasFitAttempt: true, updatedAt: serverTimestamp() });
+  }
+  await batch.commit();
   return ref.id;
 };
 

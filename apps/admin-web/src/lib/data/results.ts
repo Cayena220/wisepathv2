@@ -180,7 +180,6 @@ export interface DepartmentStats {
   attempts: number;
   fitAttempts: number;
   programCounts: Record<string, number>;
-  weekly: { label: string; start: number; end: number; count: number }[];
 }
 
 export function useDepartmentStats(departmentId: string | null, programIds: string[]) {
@@ -192,23 +191,14 @@ export function useDepartmentStats(departmentId: string | null, programIds: stri
       const D = departmentId!;
       const inDept = where('topDepartmentIds', 'array-contains', D);
       const now = Date.now();
-      const weeks = Array.from({ length: 8 }, (_, i) => {
-        const end = now - (7 - i) * 7 * DAY;
-        return { start: end - 7 * DAY, end };
-      });
       const attemptsBase = collection(db, 'programAssessmentAttempts');
-      const [matched, best, recent, attempts, fit, perProgram, weekly] = await Promise.all([
+      const [matched, best, recent, attempts, fit, perProgram] = await Promise.all([
         count(inDept, where('isLatest', '==', true)),
         count(inDept, where('bestDepartmentId', '==', D), where('isLatest', '==', true)),
         count(inDept, where('completedAt', '>=', Timestamp.fromMillis(now - 30 * DAY))),
         getCountFromServer(query(attemptsBase, where('departmentId', '==', D))).then((r) => r.data().count),
         getCountFromServer(query(attemptsBase, where('departmentId', '==', D), where('isFit', '==', true))).then((r) => r.data().count),
         Promise.all(programIds.map((p) => count(inDept, where('bestProgramId', '==', p), where('isLatest', '==', true)))),
-        Promise.all(
-          weeks.map((w) =>
-            count(inDept, where('completedAt', '>=', Timestamp.fromMillis(w.start)), where('completedAt', '<', Timestamp.fromMillis(w.end))),
-          ),
-        ),
       ]);
       return {
         matchedStudents: matched,
@@ -217,11 +207,6 @@ export function useDepartmentStats(departmentId: string | null, programIds: stri
         attempts,
         fitAttempts: fit,
         programCounts: Object.fromEntries(programIds.map((p, i) => [p, perProgram[i]])),
-        weekly: weeks.map((w, i) => ({
-          ...w,
-          label: new Date(w.start).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-          count: weekly[i],
-        })),
       };
     },
   });
@@ -234,7 +219,6 @@ export interface OverviewStats {
   results30d: number;
   attempts: number;
   departmentCounts: Record<string, number>;
-  weekly: { label: string; start: number; end: number; count: number }[];
 }
 
 export function useOverviewStats(departmentIds: string[]) {
@@ -244,18 +228,13 @@ export function useOverviewStats(departmentIds: string[]) {
     queryFn: async (): Promise<OverviewStats> => {
       const now = Date.now();
       const users = collection(db, 'users');
-      const weeks = Array.from({ length: 8 }, (_, i) => {
-        const end = now - (7 - i) * 7 * DAY;
-        return { start: end - 7 * DAY, end };
-      });
-      const [students, withResult, results, recent, attempts, perDept, weekly] = await Promise.all([
+      const [students, withResult, results, recent, attempts, perDept] = await Promise.all([
         getCountFromServer(query(users, where('role', '==', 'student'))).then((r) => r.data().count),
         getCountFromServer(query(users, where('role', '==', 'student'), where('hasCareerResult', '==', true))).then((r) => r.data().count),
         count(),
         count(where('completedAt', '>=', Timestamp.fromMillis(now - 30 * DAY))),
         getCountFromServer(collection(db, 'programAssessmentAttempts')).then((r) => r.data().count),
         Promise.all(departmentIds.map((d) => count(where('bestDepartmentId', '==', d), where('isLatest', '==', true)))),
-        Promise.all(weeks.map((w) => count(where('completedAt', '>=', Timestamp.fromMillis(w.start)), where('completedAt', '<', Timestamp.fromMillis(w.end))))),
       ]);
       return {
         students,
@@ -264,7 +243,6 @@ export function useOverviewStats(departmentIds: string[]) {
         results30d: recent,
         attempts,
         departmentCounts: Object.fromEntries(departmentIds.map((d, i) => [d, perDept[i]])),
-        weekly: weeks.map((w, i) => ({ ...w, label: new Date(w.start).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), count: weekly[i] })),
       };
     },
   });

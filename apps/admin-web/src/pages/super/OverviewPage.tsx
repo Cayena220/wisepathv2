@@ -1,27 +1,30 @@
 import { formatManila, timeAgo } from '@wisepath/shared';
-import { Building2, ClipboardCheck, GraduationCap, ShieldCheck, Trophy, UserCog, Users } from 'lucide-react';
-import { Link, useNavigate } from 'react-router';
+import { ArrowRight, BarChart3, Building2, ClipboardCheck, GraduationCap, ShieldCheck, Trophy, UserCog, Users } from 'lucide-react';
+import { Link } from 'react-router';
 import { useAuth } from '@/auth/AuthProvider';
 import { ActivityFeed } from '@/components/data/ActivityFeed';
-import { WeeklyChart } from '@/components/data/charts';
+import { useSegmentDialog } from '@/components/analytics/SegmentDialog';
+import { InterestsCard, MatchStrengthCard, SuperFunnelCard, TrendCard } from '@/components/analytics/widgets';
 import { BarList, PageHeader, SectionTitle, StatCard } from '@/components/data/display';
 import { RegistrationPill } from '@/components/data/RegistrationPill';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Skeleton } from '@/components/ui/primitives';
 import { useRegistrationSettings } from '@/lib/data/accounts';
 import { useDepartments } from '@/lib/data/catalog';
+import { useAnalyticsSample } from '@/lib/data/analytics';
 import { useAuditLog, useOverviewStats } from '@/lib/data/results';
 import { percent } from '@/lib/utils';
 
 export function OverviewPage() {
   const { actor } = useAuth();
-  const navigate = useNavigate();
   const { departments, isLoading: deptLoading } = useDepartments();
   const active = departments.filter((d) => d.status === 'active');
   const stats = useOverviewStats(active.map((d) => d.id));
   const registration = useRegistrationSettings();
   const audit = useAuditLog({ departmentId: null, isSuperAdmin: true, max: 6 });
   const withAdmin = active.filter((d) => d.adminUid).length;
+  const sample = useAnalyticsSample(null);
+  const segment = useSegmentDialog(sample.data?.results, sample.data?.attempts);
   const s = stats.data;
 
   return (
@@ -31,11 +34,18 @@ export function OverviewPage() {
         title={`Good day, ${actor?.name.split(' ')[0] ?? ''}`}
         description="Everything across WisePath: departments and their admins, student registration, and results."
         actions={
-          <Button asChild variant="gold">
-            <Link to="/admins/new">
-              <UserCog /> Create admin
-            </Link>
-          </Button>
+          <>
+            <Button asChild variant="outline">
+              <Link to="/analytics">
+                <BarChart3 /> Analytics
+              </Link>
+            </Button>
+            <Button asChild variant="gold">
+              <Link to="/admins/new">
+                <UserCog /> Create admin
+              </Link>
+            </Button>
+          </>
         }
       />
 
@@ -117,17 +127,7 @@ export function OverviewPage() {
       </div>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Assessments per week</CardTitle>
-            <CardDescription>Click a week to open its results.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {stats.isLoading ? <Skeleton className="h-56" /> : (
-              <WeeklyChart data={s?.weekly ?? []} onSelect={(w) => navigate(`/results?from=${w.start}&to=${w.end}`)} />
-            )}
-          </CardContent>
-        </Card>
+        <TrendCard departmentId={null} isSuperAdmin />
         <Card className="overflow-hidden">
           <CardHeader className="pb-2">
             <SectionTitle action={<Link to="/results" className="text-[13px] font-medium text-teal-700 hover:underline">All results</Link>}>
@@ -137,6 +137,28 @@ export function OverviewPage() {
           <ActivityFeed departmentId={null} isSuperAdmin />
         </Card>
       </div>
+
+      <div className="mt-10 mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-semibold text-navy-900">Insights</h2>
+          <p className="text-sm text-navy-600">Student journey and match quality across all departments. Click any bar to see who is behind it.</p>
+        </div>
+        <Button asChild variant="outline">
+          <Link to="/analytics">
+            <BarChart3 /> Full analytics <ArrowRight />
+          </Link>
+        </Button>
+      </div>
+      <div className="grid gap-6 xl:grid-cols-2">
+        <SuperFunnelCard />
+        {sample.isLoading || !sample.data ? (
+          <Skeleton className="h-72 rounded-xl" />
+        ) : (
+          <MatchStrengthCard stats={sample.data.resultStats} open={segment.open} />
+        )}
+        {sample.data && <InterestsCard stats={sample.data.resultStats} open={segment.open} limit={6} className="xl:col-span-2" />}
+      </div>
+      {segment.dialog}
 
       <Card className="mt-6 overflow-hidden">
         <CardHeader className="pb-2">

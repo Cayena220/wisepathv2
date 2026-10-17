@@ -31,16 +31,35 @@ export const colors = {
   lineStrong: 'rgba(31,51,80,0.24)',
 } as const;
 
-/** Chart / department colors, in seed order. */
-export const departmentPalette = [
-  '#3E7A6C', // teal
-  '#1F3350', // navy
-  '#C2872E', // gold
-  '#B0503B', // rust
-  '#6B4E8A', // plum
-  '#3F7CA6', // sky
-  '#7A8B3C', // olive
+/**
+ * Chart colors (validated with the dataviz palette checks: lightness band, chroma floor,
+ * colorblind separation and normal-vision floor on a white card surface).
+ * Categorical = identity, assigned in this fixed order and never cycled.
+ * The three lighter slots (aqua, yellow, magenta) are below 3:1 contrast, so charts using
+ * them always show visible text labels next to the marks.
+ */
+export const vizCategorical = [
+  '#2a78d6', // blue
+  '#eb6834', // orange
+  '#1baf7a', // aqua
+  '#eda100', // yellow
+  '#e87ba4', // magenta
+  '#008300', // green
+  '#6250d6', // violet
+  '#e34948', // red
 ] as const;
+
+/** Ordinal ramp (one hue, light → dark) for ordered steps: funnel stages, score bands. */
+export const vizOrdinal = ['#86b6ef', '#5598e7', '#2a78d6', '#1c5cab', '#104281'] as const;
+
+/** Single-series charts use slot 1. */
+export const vizSeries = vizCategorical[0];
+
+/** Chart chrome: hairline grid, axis/baseline, muted tick text. */
+export const vizChrome = { grid: '#e8e6df', axis: '#c9c6bb', tick: '#6f6d66' } as const;
+
+/** Department identity colors, in seed order (one categorical slot each). */
+export const departmentPalette = vizCategorical.slice(0, 7);
 
 export const radius = { sm: 8, md: 12, lg: 16, xl: 24, full: 9999 } as const;
 export const fontSizes = { xs: 12, sm: 14, md: 16, lg: 18, xl: 20, '2xl': 24, '3xl': 30, '4xl': 36 } as const;

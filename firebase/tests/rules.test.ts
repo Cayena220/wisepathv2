@@ -208,6 +208,7 @@ describe('role escalation', () => {
     await assertFails(updateDoc(doc(as(STUDENT), 'users', STUDENT.uid), { role: 'admin', updatedAt: serverTimestamp() }));
     await assertFails(updateDoc(doc(as(STUDENT), 'users', STUDENT.uid), { status: 'disabled', updatedAt: serverTimestamp() }));
     await assertSucceeds(updateDoc(doc(as(STUDENT), 'users', STUDENT.uid), { displayName: 'Stu B', updatedAt: serverTimestamp() }));
+    await assertSucceeds(updateDoc(doc(as(STUDENT), 'users', STUDENT.uid), { hasFitAttempt: true, updatedAt: serverTimestamp() }));
   });
   it('treats v1 self-registered admins as inert', async () => {
     await assertFails(setDoc(doc(as(LEGACY), 'programs/new1'), { ...programDoc('computing'), ...stampsFor(LEGACY.uid) }));

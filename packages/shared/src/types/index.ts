@@ -87,6 +87,8 @@ export interface UserDoc {
   activeProgramId?: string | null;
   latestResult?: LatestResultSummary | null;
   hasCareerResult?: boolean;
+  /** set when the student finishes any program fit check */
+  hasFitAttempt?: boolean;
   hasPhoto?: boolean;
   // admin
   departmentId?: string;

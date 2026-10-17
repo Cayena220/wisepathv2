@@ -14,6 +14,8 @@ import { args, auth, db, FieldValue, generatePassword, isEmulator, log, target, 
 const email = args.values.email?.trim().toLowerCase();
 const name = args.values.name?.trim();
 const providedPassword = args.values.password;
+/** --reset-email: never print a password; the Super Admin sets it with "Forgot password?" on the website. */
+const resetFlow = args.flags.has('reset-email');
 
 if (!email || !name) {
   console.error('Usage: npm run bootstrap:superadmin -- --email you@school.edu --name "Your Name" [--emulator] [--transfer]');
@@ -48,10 +50,10 @@ if (existingUid && existingUid !== user?.uid) {
 
 let generated: string | null = null;
 if (!user) {
-  generated = providedPassword ? null : generatePassword();
+  generated = providedPassword || resetFlow ? null : generatePassword();
   user = await auth.createUser({
     email,
-    password: providedPassword ?? generated!,
+    password: providedPassword ?? generated ?? generatePassword(),
     displayName: name,
     emailVerified: true,
   });
@@ -119,7 +121,10 @@ await writeAudit({
 });
 
 console.log(`\nSuper Admin ready: ${name} <${email}>`);
-if (generated) {
+if (resetFlow) {
+  console.log('\nNo password was printed. On the website, click "Forgot password?", enter this email,');
+  console.log('and choose your password from the link Firebase emails you. (An existing login keeps its current password.)');
+} else if (generated) {
   console.log(`\nTemporary password (shown once — you will be asked to change it at first sign-in):\n\n    ${generated}\n`);
 } else if (providedPassword) {
   console.log('Password: the one you passed with --password.');

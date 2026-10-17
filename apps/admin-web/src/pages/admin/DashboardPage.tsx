@@ -1,18 +1,19 @@
-import { Award, ClipboardCheck, GraduationCap, Plus, Target, Trophy, Users } from 'lucide-react';
-import { Link, useNavigate } from 'react-router';
+import { ArrowRight, Award, BarChart3, ClipboardCheck, GraduationCap, Plus, Target, Trophy, Users } from 'lucide-react';
+import { Link } from 'react-router';
 import { useAuth } from '@/auth/AuthProvider';
 import { ActivityFeed } from '@/components/data/ActivityFeed';
-import { WeeklyChart } from '@/components/data/charts';
+import { useSegmentDialog } from '@/components/analytics/SegmentDialog';
+import { DepartmentFunnelCard, InterestsCard, MatchStrengthCard, TrendCard } from '@/components/analytics/widgets';
 import { BarList, PageHeader, SectionTitle, StatCard } from '@/components/data/display';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Skeleton } from '@/components/ui/primitives';
 import { usePrograms, useProgramAssessments } from '@/lib/data/catalog';
+import { useAnalyticsSample } from '@/lib/data/analytics';
 import { useDepartmentStats } from '@/lib/data/results';
 import { percent } from '@/lib/utils';
 
 export function DashboardPage() {
   const { actor, department } = useAuth();
-  const navigate = useNavigate();
   const deptId = actor?.departmentId ?? null;
   const programs = usePrograms(deptId);
   const active = (programs.data ?? []).filter((p) => p.status === 'active');
@@ -20,6 +21,8 @@ export function DashboardPage() {
   const stats = useDepartmentStats(deptId, active.map((p) => p.id));
   const s = stats.data;
   const programsWithoutAssessment = active.filter((p) => !(assessments.data ?? []).some((a) => a.programId === p.id && a.status === 'active'));
+  const sample = useAnalyticsSample(deptId);
+  const segment = useSegmentDialog(sample.data?.results, sample.data?.attempts);
 
   return (
     <>
@@ -111,15 +114,7 @@ export function DashboardPage() {
       </div>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.4fr_1fr]">
-        <Card>
-          <CardHeader>
-            <CardTitle>Assessments per week</CardTitle>
-            <CardDescription>Career assessments that included your programs in the top 3. Click a week to open it.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {stats.isLoading ? <Skeleton className="h-56" /> : <WeeklyChart data={s?.weekly ?? []} onSelect={(w) => navigate(`/results?from=${w.start}&to=${w.end}`)} />}
-          </CardContent>
-        </Card>
+        <TrendCard departmentId={deptId} isSuperAdmin={false} />
         <Card className="p-5">
           <div className="flex items-center gap-2 font-semibold text-navy-900">
             <GraduationCap className="size-4 text-gold-700" /> Department checklist
@@ -145,6 +140,36 @@ export function DashboardPage() {
           </ul>
         </Card>
       </div>
+
+      <div className="mt-10 mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-semibold text-navy-900">Insights</h2>
+          <p className="text-sm text-navy-600">Quick analytics for your matched students. Click any bar to see who is behind it.</p>
+        </div>
+        <Button asChild variant="outline">
+          <Link to="/analytics">
+            <BarChart3 /> Full analytics <ArrowRight />
+          </Link>
+        </Button>
+      </div>
+      {sample.isLoading || !sample.data ? (
+        <div className="grid gap-6 xl:grid-cols-2">
+          <Skeleton className="h-72 rounded-xl" />
+          <Skeleton className="h-72 rounded-xl" />
+        </div>
+      ) : (
+        <div className="grid gap-6 xl:grid-cols-2">
+          <DepartmentFunnelCard
+            stats={sample.data.resultStats}
+            attempts={sample.data.attemptStats}
+            resultIds={sample.data.results.map((r) => r.id)}
+            open={segment.open}
+          />
+          <MatchStrengthCard stats={sample.data.resultStats} open={segment.open} />
+          <InterestsCard stats={sample.data.resultStats} open={segment.open} limit={6} className="xl:col-span-2" />
+        </div>
+      )}
+      {segment.dialog}
     </>
   );
 }

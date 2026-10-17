@@ -1,4 +1,5 @@
 /* Shared display components: PageHeader, StatCard, BarList, EmptyState, ErrorState, LinkRow, MatchPill, StatusBadge. */
+import { vizSeries } from '@wisepath/shared';
 import { AlertTriangle, ArrowUpRight, ChevronRight, Inbox } from 'lucide-react';
 import * as React from 'react';
 import { Link } from 'react-router';
@@ -19,13 +20,13 @@ export function PageHeader({
   className?: string;
 }) {
   return (
-    <div className={cn('mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between', className)}>
-      <div className="min-w-0">
+    <div className={cn('mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between', className)}>
+      <div className="min-w-0 xl:flex-1">
         {eyebrow && <div className="mb-1.5 text-xs font-semibold tracking-wider text-gold-700 uppercase">{eyebrow}</div>}
         <h1 className="text-2xl font-bold tracking-tight text-navy-900 sm:text-[28px]">{title}</h1>
         {description && <p className="mt-1.5 max-w-2xl text-[14.5px] leading-relaxed text-navy-600">{description}</p>}
       </div>
-      {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
+      {actions && <div className="flex flex-wrap items-center gap-2 xl:shrink-0 xl:justify-end">{actions}</div>}
     </div>
   );
 }
@@ -106,7 +107,7 @@ export function BarList({ items, total, emptyText = 'No data yet.' }: { items: B
             <div className="relative min-w-0 flex-1">
               <div
                 className="absolute inset-y-0 left-0 rounded-md opacity-[0.14] transition-all group-hover:opacity-25"
-                style={{ width: `${Math.max(2, (item.value / max) * 100)}%`, background: item.color ?? '#3E7A6C' }}
+                style={{ width: `${Math.max(2, (item.value / max) * 100)}%`, background: item.color ?? vizSeries }}
               />
               <div className="relative flex items-center gap-2 py-1 pl-2">
                 <span className="truncate text-[13.5px] font-medium text-navy-900">{item.label}</span>

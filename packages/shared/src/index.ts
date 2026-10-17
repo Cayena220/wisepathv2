@@ -10,3 +10,4 @@ export * from './registration/status';
 export * from './brand/tokens';
 export * from './brand/backgroundGeometry';
 export * from './utils';
+export * from './analytics';
