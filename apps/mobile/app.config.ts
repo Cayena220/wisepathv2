@@ -8,7 +8,8 @@ const config: ExpoConfig = {
   icon: './assets/icon.png',
   userInterfaceStyle: 'light',
   backgroundColor: '#FFFDF8',
-  platforms: ['android'],
+  // Students install the Android app; web is the browser preview from `npx expo start` → w.
+  platforms: ['android', 'web'],
   assetBundlePatterns: ['**/*'],
   android: {
     package: 'com.wisepath.app',
@@ -19,6 +20,13 @@ const config: ExpoConfig = {
       backgroundColor: '#FFFFFF',
     },
     softwareKeyboardLayoutMode: 'resize',
+  },
+  web: {
+    bundler: 'metro',
+    output: 'single',
+    name: 'WisePath',
+    favicon: './assets/icon.png',
+    themeColor: '#FFFDF8',
   },
   plugins: [
     'expo-font',

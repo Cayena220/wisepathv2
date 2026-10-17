@@ -7,7 +7,8 @@ import {
 } from '@wisepath/shared';
 import { Check, CheckCircle2, Circle, CircleDot, GraduationCap, Save } from 'lucide-react-native';
 import * as React from 'react';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import { DeptTag } from '../../components/cards';
 import { Button, Card, Chip, EmptyState, Loader, Pill, Ring, Screen, SectionTitle, T, Tap } from '../../components/ui';
 import { useCatalogView, useLatestResult, useMyAttempts } from '../../hooks/useStudentData';
@@ -106,7 +107,7 @@ export function ProgressScreen({ navigation }: TabScreen<'Progress'>) {
       await saveProgress({ uid, name: account?.profile?.name ?? '', program, yearLevel: year, semester, subjectStatus: status });
       setDirty(false);
     } catch (e) {
-      Alert.alert('Could not save', errorText(e));
+      showAlert('Could not save', errorText(e));
     } finally {
       setSaving(false);
     }

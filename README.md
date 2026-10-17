@@ -65,6 +65,14 @@ To run the Android app against the same emulators, set `EXPO_PUBLIC_USE_EMULATOR
 npm run mobile
 ```
 
+**Web view (browser preview):** press `w` in the Expo terminal, or run the app straight in the browser:
+
+```bash
+npm run web -w @wisepath/mobile
+```
+
+It opens http://localhost:8081 with the app in a phone-width column. It is for checking screens quickly — students still install the Android APK. With the emulators on, the web view uses `localhost` automatically, so leave `EXPO_PUBLIC_EMULATOR_HOST` unset. Without them, it talks to the live Firebase project, like the APK.
+
 Test logins (emulator only) are listed in `scripts/src/fixtures.ts`: the Super Admin, one admin per department (for example `ccit.admin@demo.wisepath.test`), and the demo students. Emulator UI: http://127.0.0.1:4000.
 
 ---

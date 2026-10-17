@@ -16,7 +16,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { doc, getDoc } from 'firebase/firestore';
 import { ArrowLeft, ArrowRight, Camera, Check, Lock } from 'lucide-react-native';
 import * as React from 'react';
-import { Alert, KeyboardAvoidingView, View } from 'react-native';
+import { KeyboardAvoidingView, View } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import { Avatar } from '../../components/brand';
 import { Button, Chip, ErrorBanner, Field, Header, ProgressBar, Screen, T, Tap } from '../../components/ui';
 import { db } from '../../lib/firebase';
@@ -141,7 +142,7 @@ export function ProfileSetupScreen() {
 
   const pickPhoto = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) return Alert.alert('Photo access needed', 'Allow photo access to set your profile picture.');
+    if (!permission.granted) return showAlert('Photo access needed', 'Allow photo access to set your profile picture.');
     const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: 1 });
     if (result.canceled || !result.assets?.[0]?.uri) return;
     const resized = await ImageManipulator.manipulateAsync(result.assets[0].uri, [{ resize: { width: 320 } }], {
@@ -149,7 +150,7 @@ export function ProfileSetupScreen() {
       format: ImageManipulator.SaveFormat.JPEG,
       base64: true,
     });
-    if (!resized.base64) return Alert.alert('Could not read photo', 'Try another image.');
+    if (!resized.base64) return showAlert('Could not read photo', 'Try another image.');
     setPhoto(`data:image/jpeg;base64,${resized.base64}`);
     setPhotoChanged(true);
   };

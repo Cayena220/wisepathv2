@@ -1,6 +1,7 @@
 import { KeyRound } from 'lucide-react-native';
 import * as React from 'react';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import { Button, ErrorBanner, Field, Header, Screen } from '../../components/ui';
 import { errorText } from '../../lib/hooks';
 import type { AppScreen } from '../../navigation/types';
@@ -21,7 +22,7 @@ export function ChangePasswordScreen({ navigation }: AppScreen<'ChangePassword'>
     setBusy(true);
     try {
       await changePassword(current, next);
-      Alert.alert('Password updated');
+      showAlert('Password updated');
       navigation.goBack();
     } catch (e) {
       setError(errorText(e));

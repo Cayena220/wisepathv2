@@ -1,12 +1,14 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initializeApp } from 'firebase/app';
-import { connectAuthEmulator, getReactNativePersistence, initializeAuth } from 'firebase/auth';
+import { connectAuthEmulator, initializeAuth } from 'firebase/auth';
 import { connectFirestoreEmulator, initializeFirestore } from 'firebase/firestore';
+import { Platform } from 'react-native';
+import { authPersistence } from './authPersistence';
 
 const env = process.env;
 
 export const useEmulators = env.EXPO_PUBLIC_USE_EMULATORS === 'true';
-const emulatorHost = env.EXPO_PUBLIC_EMULATOR_HOST || '10.0.2.2';
+// 10.0.2.2 is the Android emulator's alias for this computer; the browser preview runs on it directly.
+const emulatorHost = env.EXPO_PUBLIC_EMULATOR_HOST || (Platform.OS === 'web' ? 'localhost' : '10.0.2.2');
 
 const firebaseConfig = useEmulators
   ? {
@@ -27,7 +29,7 @@ const firebaseConfig = useEmulators
 export const isFirebaseConfigured = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId);
 
 export const app = initializeApp(firebaseConfig);
-export const auth = initializeAuth(app, { persistence: getReactNativePersistence(AsyncStorage) });
+export const auth = initializeAuth(app, { persistence: authPersistence });
 export const db = initializeFirestore(app, { ignoreUndefinedProperties: true, experimentalAutoDetectLongPolling: true });
 
 if (useEmulators) {

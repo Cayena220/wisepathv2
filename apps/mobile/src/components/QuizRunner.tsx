@@ -1,7 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react-native';
 import * as React from 'react';
-import { Alert, BackHandler, View } from 'react-native';
+import { BackHandler, View } from 'react-native';
+import { showAlert } from '../lib/alert';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 import { colors, radius, space } from '../theme';
 import { Button, ErrorBanner, ProgressBar, Screen, T, Tap } from './ui';
@@ -36,7 +37,7 @@ export function QuizRunner({
 
   const exit = React.useCallback(() => {
     if (!answered) return navigation.goBack();
-    Alert.alert('Leave the assessment?', 'Your answers so far will not be saved.', [
+    showAlert('Leave the assessment?', 'Your answers so far will not be saved.', [
       { text: 'Keep going', style: 'cancel' },
       { text: 'Leave', style: 'destructive', onPress: () => navigation.goBack() },
     ]);

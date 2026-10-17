@@ -1,7 +1,8 @@
 import type { CareerResult } from '@wisepath/shared';
 import { ClipboardCheck, Trophy } from 'lucide-react-native';
 import * as React from 'react';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import { AttemptRow, ResultHistoryCard } from '../../components/cards';
 import { Button, Card, Chip, EmptyState, ErrorBanner, Loader, Screen, T } from '../../components/ui';
 import { useMyAttempts, useMyResults } from '../../hooks/useStudentData';
@@ -18,12 +19,12 @@ export function ResultsScreen({ navigation }: TabScreen<'Results'>) {
   const [tab, setTab] = React.useState<'career' | 'fit'>('career');
 
   const confirmDelete = (result: CareerResult) =>
-    Alert.alert('Delete this result?', 'It will be removed from your history. Department admins will no longer see it.', [
+    showAlert('Delete this result?', 'It will be removed from your history. Department admins will no longer see it.', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Delete',
         style: 'destructive',
-        onPress: () => void deleteResult(uid, result, results.data ?? []).catch((e) => Alert.alert('Could not delete', errorText(e))),
+        onPress: () => void deleteResult(uid, result, results.data ?? []).catch((e) => showAlert('Could not delete', errorText(e))),
       },
     ]);
 

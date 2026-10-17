@@ -1,7 +1,8 @@
 import { incomeLabel, studentStatusLabel } from '@wisepath/shared';
 import { doc } from 'firebase/firestore';
 import { ChevronRight, Info, KeyRound, LogOut, Pencil } from 'lucide-react-native';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
+import { showAlert } from '../../lib/alert';
 import { Avatar } from '../../components/brand';
 import { Card, Pill, Screen, SectionTitle, T, Tap } from '../../components/ui';
 import { db, useEmulators } from '../../lib/firebase';
@@ -80,7 +81,7 @@ export function ProfileScreen({ navigation }: TabScreen<'Profile'>) {
           icon={Info}
           label="About WisePath"
           onPress={() =>
-            Alert.alert(
+            showAlert(
               'WisePath 2.0',
               'Course recommendation and progress app — STI West Negros University capstone. Matches are calculated from your answers and profile; they are guidance, not a guarantee.',
             )
@@ -90,7 +91,7 @@ export function ProfileScreen({ navigation }: TabScreen<'Profile'>) {
           icon={LogOut}
           label="Sign out"
           danger
-          onPress={() => Alert.alert('Sign out?', undefined, [{ text: 'Cancel', style: 'cancel' }, { text: 'Sign out', style: 'destructive', onPress: () => void signOut() }])}
+          onPress={() => showAlert('Sign out?', undefined, [{ text: 'Cancel', style: 'cancel' }, { text: 'Sign out', style: 'destructive', onPress: () => void signOut() }])}
         />
       </Card>
       {useEmulators && (

@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev:emulator", "-w", "@wisepath/admin-web", "--", "--port", "5173", "--strictPort"],
       "port": 5173
+    },
+    {
+      "name": "mobile-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "web", "-w", "@wisepath/mobile", "--", "--port", "8081"],
+      "port": 8081
     }
   ]
 }
