@@ -1,25 +1,26 @@
 import { cn } from '@/lib/utils';
 
+/** Graduation cap + open book + path — the WisePath mark. */
 export function LogoMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 64 64" className={cn('size-9', className)} aria-hidden>
-      <rect width="64" height="64" rx="16" fill="#1F3350" />
-      <path d="M32 9 L36.5 27.5 L55 32 L36.5 36.5 L32 55 L27.5 36.5 L9 32 L27.5 27.5 Z" fill="#C2872E" />
-      <path d="M32 20 L34.5 29.5 L44 32 L34.5 34.5 L32 44 L29.5 34.5 L20 32 L29.5 29.5 Z" fill="#FFFDF8" />
-      <circle cx="32" cy="32" r="3" fill="#1F3350" />
-    </svg>
-  );
+  return <img src="/brand/wisepath-mark.png" alt="" className={cn('h-10 w-auto select-none', className)} draggable={false} />;
 }
 
-export function Logo({ subtitle, className, inverted }: { subtitle?: string; className?: string; inverted?: boolean }) {
+/** Full logo with "WISEPATH — Smart Course Recommendation". Designed for light backgrounds. */
+export function LogoFull({ className }: { className?: string }) {
+  return <img src="/brand/wisepath-logo.png" alt="WisePath — Smart Course Recommendation" className={cn('h-28 w-auto select-none', className)} draggable={false} />;
+}
+
+/**
+ * Horizontal lockup: mark + WISEPATH lettering (+ optional subtitle).
+ * `onDark` sets it on a white tile, because the navy parts of the logo vanish on dark backgrounds.
+ */
+export function Logo({ subtitle, className, onDark }: { subtitle?: string; className?: string; onDark?: boolean }) {
   return (
-    <div className={cn('flex items-center gap-2.5', className)}>
-      <LogoMark />
-      <div className="leading-tight">
-        <div className={cn('text-[15px] font-bold tracking-tight', inverted ? 'text-white' : 'text-navy-900')}>
-          Wise<span className={inverted ? 'text-gold-300' : 'text-gold-700'}>Path</span>
-        </div>
-        {subtitle && <div className={cn('text-[11px] font-medium', inverted ? 'text-white/60' : 'text-navy-600')}>{subtitle}</div>}
+    <div className={cn('flex items-center gap-2.5', onDark && 'rounded-2xl bg-white px-3.5 py-2.5 shadow-[var(--shadow-lift)]', className)}>
+      <LogoMark className="h-11" />
+      <div className="flex flex-col gap-1">
+        <img src="/brand/wisepath-wordmark.png" alt="WisePath" className="h-[22px] w-auto select-none" draggable={false} />
+        {subtitle && <div className="text-[11px] leading-none font-semibold tracking-wide text-navy-600 uppercase">{subtitle}</div>}
       </div>
     </div>
   );

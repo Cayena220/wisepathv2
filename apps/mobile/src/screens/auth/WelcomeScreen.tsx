@@ -1,7 +1,7 @@
 import { formatManila } from '@wisepath/shared';
 import { ArrowRight, Compass, GraduationCap, Sparkles, Trophy } from 'lucide-react-native';
 import { View } from 'react-native';
-import { LogoMark, Wordmark } from '../../components/brand';
+import { LogoFull } from '../../components/brand';
 import { Button, Card, Screen, T } from '../../components/ui';
 import type { AuthScreen } from '../../navigation/types';
 import { useRegistrationStatus } from '../../services';
@@ -29,17 +29,14 @@ export function WelcomeScreen({ navigation }: AuthScreen<'Welcome'>) {
         </View>
       }
     >
-      <View style={{ alignItems: 'flex-start', gap: space.lg, marginTop: space.xxl }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <LogoMark size={52} />
-          <View>
-            <Wordmark size={26} />
-            <T variant="caption" color={colors.textMuted}>
-              STI West Negros University
-            </T>
-          </View>
-        </View>
-        <T variant="display" style={{ marginTop: space.xl }}>
+      <View style={{ alignItems: 'center', gap: 6, marginTop: space.lg }}>
+        <LogoFull width={190} />
+        <T variant="caption" color={colors.textMuted}>
+          STI West Negros University
+        </T>
+      </View>
+      <View style={{ alignItems: 'flex-start', gap: space.lg, marginTop: space.xl }}>
+        <T variant="display">
           Find the college program that <T variant="display" color={colors.gold700}>fits you.</T>
         </T>
         <T variant="body" color={colors.textMuted}>

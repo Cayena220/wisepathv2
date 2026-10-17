@@ -1,26 +1,25 @@
 import { initials } from '@wisepath/shared';
 import { Image, View } from 'react-native';
-import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { colors } from '../theme';
 import { T } from './ui';
 
+const MARK = require('../../assets/brand/wisepath-mark.png');
+const WORDMARK = require('../../assets/brand/wisepath-wordmark.png');
+const FULL = require('../../assets/brand/wisepath-logo.png');
+
+/** Graduation cap + open book + path. `size` is the height in dp. */
 export function LogoMark({ size = 44 }: { size?: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 64 64">
-      <Rect width="64" height="64" rx="16" fill="#1F3350" />
-      <Path d="M32 9 L36.5 27.5 L55 32 L36.5 36.5 L32 55 L27.5 36.5 L9 32 L27.5 27.5 Z" fill="#C2872E" />
-      <Path d="M32 20 L34.5 29.5 L44 32 L34.5 34.5 L32 44 L29.5 34.5 L20 32 L29.5 29.5 Z" fill="#FFFDF8" />
-      <Circle cx="32" cy="32" r="3" fill="#1F3350" />
-    </Svg>
-  );
+  return <Image source={MARK} style={{ height: size, width: size * (512 / 473) }} resizeMode="contain" accessibilityIgnoresInvertColors />;
 }
 
+/** "WISEPATH" lettering. `size` is the height in dp. */
 export function Wordmark({ size = 22 }: { size?: number }) {
-  return (
-    <T style={{ fontSize: size, lineHeight: size * 1.2 }} weight="bold">
-      Wise<T style={{ fontSize: size, lineHeight: size * 1.2 }} weight="bold" color={colors.gold700}>Path</T>
-    </T>
-  );
+  return <Image source={WORDMARK} style={{ height: size, width: size * (600 / 134) }} resizeMode="contain" accessibilityLabel="WisePath" />;
+}
+
+/** Full logo: mark + WISEPATH + "Smart Course Recommendation". `width` in dp. */
+export function LogoFull({ width = 200 }: { width?: number }) {
+  return <Image source={FULL} style={{ width, height: width * (800 / 740) }} resizeMode="contain" accessibilityLabel="WisePath — Smart Course Recommendation" />;
 }
 
 export function Avatar({ name, uri, size = 56 }: { name: string; uri?: string | null; size?: number }) {

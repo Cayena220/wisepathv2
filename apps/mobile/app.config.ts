@@ -16,7 +16,7 @@ const config: ExpoConfig = {
     versionCode: 3,
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
-      backgroundColor: '#FFFDF8',
+      backgroundColor: '#FFFFFF',
     },
     softwareKeyboardLayoutMode: 'resize',
   },
@@ -28,7 +28,7 @@ const config: ExpoConfig = {
     ],
     [
       'expo-splash-screen',
-      { image: './assets/splash.png', imageWidth: 200, resizeMode: 'contain', backgroundColor: '#FFFDF8' },
+      { image: './assets/splash.png', imageWidth: 240, resizeMode: 'contain', backgroundColor: '#FFFFFF' },
     ],
   ],
   scheme: 'wisepath',

@@ -1,12 +1,14 @@
 import { Loader2, Smartphone, UserX } from 'lucide-react';
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { AuthLayout } from '@/pages/auth/AuthLayout';
+import { LogoMark } from '@/components/layout/Logo';
 import { Button } from '@/components/ui/button';
 import { useAuth, type StaffRole } from './AuthProvider';
 
 export function FullPageLoader({ label = 'Loading WisePath…' }: { label?: string }) {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-parchment text-navy-600">
+      <LogoMark className="mb-2 h-16 animate-pulse" />
       <Loader2 className="size-6 animate-spin text-gold-700" />
       <div className="text-sm">{label}</div>
     </div>

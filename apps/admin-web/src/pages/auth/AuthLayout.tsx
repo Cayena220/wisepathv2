@@ -1,7 +1,7 @@
 import { Compass, GraduationCap, ShieldCheck } from 'lucide-react';
 import * as React from 'react';
 import { BrandBackground } from '@/components/layout/BrandBackground';
-import { Logo } from '@/components/layout/Logo';
+import { Logo, LogoFull } from '@/components/layout/Logo';
 import { useEmulators } from '@/lib/firebase';
 
 /** Split sign-in layout: brand panel (with the strong background) + form card. */
@@ -11,7 +11,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
       <BrandBackground variant="auth" className="fixed" />
       <section className="relative isolate hidden overflow-hidden lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16">
         <BrandBackground variant="panel" />
-        <Logo inverted subtitle="Administration" />
+        <Logo onDark subtitle="Administration" className="self-start" />
         <div className="max-w-lg">
           <h2 className="text-[40px] leading-[1.1] font-bold tracking-tight text-white">
             Guide every student to the <span className="text-gold-300">right path.</span>
@@ -38,8 +38,8 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
       </section>
       <section className="flex items-center justify-center px-4 py-10 sm:px-8">
         <div className="w-full max-w-[420px]">
-          <div className="mb-8 flex justify-center lg:hidden">
-            <Logo subtitle="Administration" />
+          <div className="mb-6 flex justify-center">
+            <LogoFull className="h-32 sm:h-36" />
           </div>
           <div className="rounded-2xl border border-white/70 bg-white/85 p-6 shadow-[var(--shadow-lift)] backdrop-blur-xl sm:p-8">{children}</div>
           {useEmulators && (
