@@ -13,8 +13,8 @@ const config: ExpoConfig = {
   assetBundlePatterns: ['**/*'],
   android: {
     package: 'com.wisepath.app',
-    // Must stay above v1's versionCode (2) so the new APK installs over the old one.
-    versionCode: 3,
+    // Raise on every APK you hand out so it installs as an update (v1 used 2; 2.0's first builds used 3).
+    versionCode: 4,
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#FFFFFF',
