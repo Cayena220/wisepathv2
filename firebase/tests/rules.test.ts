@@ -315,6 +315,25 @@ describe('department content ownership', () => {
     await assertSucceeds(getDoc(doc(as(SA), 'programs/old')));
     await assertFails(updateDoc(doc(as(SA), 'programs/it'), { title: 'Changed', ...updateStampsFor(SA.uid) }));
   });
+  it('lets the Super Admin reorder programs and move them, with their assessments, to an active department', async () => {
+    const db = as(SA);
+    await assertSucceeds(updateDoc(doc(db, 'programs/civil'), { catalogOrder: 7, ...updateStampsFor(SA.uid) }));
+    const move = writeBatch(db);
+    move.update(doc(db, 'programs/it'), { departmentId: 'business', catalogOrder: 3, ...updateStampsFor(SA.uid) });
+    move.update(doc(db, 'programAssessments/it_assessment'), { departmentId: 'business', ...updateStampsFor(SA.uid) });
+    await assertSucceeds(move.commit());
+  });
+  it('only lets the Super Admin move a program’s assessments together with the program', async () => {
+    await assertFails(updateDoc(doc(as(SA), 'programAssessments/it_assessment'), { departmentId: 'business', ...updateStampsFor(SA.uid) }));
+  });
+  it('refuses moves to archived or missing departments, and content edits mixed into an arrangement', async () => {
+    await env.withSecurityRulesDisabled((ctx) => updateDoc(doc(ctx.firestore() as unknown as Firestore, 'departments/education'), { status: 'archived' }));
+    const db = as(SA);
+    await assertFails(updateDoc(doc(db, 'programs/it'), { departmentId: 'education', ...updateStampsFor(SA.uid) }));
+    await assertFails(updateDoc(doc(db, 'programs/it'), { departmentId: 'nowhere', ...updateStampsFor(SA.uid) }));
+    await assertFails(updateDoc(doc(db, 'programs/it'), { catalogOrder: 2, title: 'Renamed', ...updateStampsFor(SA.uid) }));
+    await assertFails(updateDoc(doc(as(ADMIN), 'programs/it'), { departmentId: 'business', ...updateStampsFor(ADMIN.uid) }));
+  });
   it('lets the Super Admin manage system questions and admins manage only department questions', async () => {
     await assertSucceeds(updateDoc(doc(as(SA), 'careerQuestions/q1'), { text: 'Which activities energize you most?', ...updateStampsFor(SA.uid) }));
     await assertFails(updateDoc(doc(as(ADMIN), 'careerQuestions/q1'), { text: 'Changed by admin!', ...updateStampsFor(ADMIN.uid) }));

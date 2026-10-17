@@ -164,6 +164,77 @@ export const deleteProgram = async (actor: Actor, program: Program) => {
   await batch.commit();
 };
 
+// ================================================================ catalog arrangement (Super Admin)
+
+export interface CatalogArrangement {
+  /** Department ids, top to bottom. */
+  departmentIds: string[];
+  /** Program ids per department, top to bottom. */
+  programIds: Record<string, string[]>;
+}
+
+/**
+ * Saves a new department order, program order and program→department assignment.
+ * Each moved program gets its own batch (with its assessments) to stay within the rules' get() limits.
+ */
+export const saveArrangement = async (
+  actor: Actor,
+  next: CatalogArrangement,
+  departments: Department[],
+  programs: Program[],
+  assessments: ProgramAssessment[],
+) => {
+  const deptById = new Map(departments.map((d) => [d.id, d]));
+  const programById = new Map(programs.map((p) => [p.id, p]));
+  const placement = new Map<string, { departmentId: string; catalogOrder: number }>();
+  let order = 0;
+  for (const deptId of next.departmentIds) {
+    for (const programId of next.programIds[deptId] ?? []) placement.set(programId, { departmentId: deptId, catalogOrder: ++order });
+  }
+
+  const moved = programs.filter((p) => placement.get(p.id) && placement.get(p.id)!.departmentId !== p.departmentId);
+  for (const program of moved) {
+    const to = placement.get(program.id)!;
+    const batch = writeBatch(db);
+    batch.update(doc(db, 'programs', program.id), { ...to, ...updateStamps(actor) });
+    for (const a of assessments.filter((x) => x.programId === program.id)) {
+      batch.update(doc(db, 'programAssessments', a.id), { departmentId: to.departmentId, ...updateStamps(actor) });
+    }
+    addAudit(batch, actor, {
+      action: 'program.move',
+      targetType: 'program',
+      targetId: program.id,
+      targetLabel: `${program.code} · ${program.title}`,
+      departmentId: to.departmentId,
+      details: { from: program.departmentId, fromName: deptById.get(program.departmentId)?.name ?? null, to: to.departmentId },
+    });
+    bumpCatalog(batch, actor);
+    await batch.commit();
+  }
+
+  const batch = writeBatch(db);
+  let changes = 0;
+  next.departmentIds.forEach((id, index) => {
+    if (deptById.get(id)?.order !== index + 1) {
+      batch.update(doc(db, 'departments', id), { order: index + 1, ...updateStamps(actor) });
+      changes += 1;
+    }
+  });
+  for (const [id, to] of placement) {
+    const program = programById.get(id);
+    if (program && program.departmentId === to.departmentId && program.catalogOrder !== to.catalogOrder) {
+      batch.update(doc(db, 'programs', id), { catalogOrder: to.catalogOrder, ...updateStamps(actor) });
+      changes += 1;
+    }
+  }
+  if (changes) {
+    addAudit(batch, actor, { action: 'catalog.arrange', targetType: 'system', targetId: 'catalog', targetLabel: 'Catalog order', departmentId: null });
+    bumpCatalog(batch, actor);
+    await batch.commit();
+  }
+  return { moved: moved.length, reordered: changes };
+};
+
 // ================================================================ career questions
 
 export function useCareerQuestions() {

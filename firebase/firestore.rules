@@ -229,6 +229,11 @@ service cloud.firestore {
       allow update: if isDeptOwner(oldData().departmentId)
         && newData().departmentId == oldData().departmentId
         && validProgram(newData()) && updateStamp();
+      // The Super Admin arranges the catalog: the order, and which (active) department a program belongs to.
+      allow update: if isSuperAdmin() && updateStamp()
+        && onlyChanged(['departmentId', 'catalogOrder', 'updatedAt', 'updatedBy', 'updatedByName'])
+        && newData().catalogOrder is number
+        && (newData().departmentId == oldData().departmentId || deptData(newData().departmentId).status == 'active');
       allow delete: if isDeptOwner(oldData().departmentId) && oldData().status == 'archived';
     }
 
@@ -256,6 +261,10 @@ service cloud.firestore {
         && newData().departmentId == oldData().departmentId
         && newData().programId == oldData().programId
         && validAssessment(newData()) && updateStamp();
+      // Assessments follow their program when the Super Admin moves it to another department.
+      allow update: if isSuperAdmin() && updateStamp()
+        && onlyChanged(['departmentId', 'updatedAt', 'updatedBy', 'updatedByName'])
+        && getAfter(path('programs', oldData().programId)).data.departmentId == newData().departmentId;
       allow delete: if isDeptOwner(oldData().departmentId) && oldData().status == 'archived';
     }
 

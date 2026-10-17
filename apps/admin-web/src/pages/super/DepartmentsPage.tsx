@@ -1,5 +1,5 @@
 import { departmentPalette, slugify, type Department } from '@wisepath/shared';
-import { Archive, Building2, ChevronRight, Pencil, Plus, RotateCcw, UserPlus } from 'lucide-react';
+import { Archive, Building2, ChevronRight, ListOrdered, Pencil, Plus, RotateCcw, UserPlus } from 'lucide-react';
 import * as React from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
@@ -142,14 +142,19 @@ export function DepartmentsPage() {
         title="Departments"
         description="Create each department once. Every department has a single admin slot — only that admin can manage its programs."
         actions={
-          <Button
-            onClick={() => {
-              setEditing(null);
-              setFormOpen(true);
-            }}
-          >
-            <Plus /> New department
-          </Button>
+          <>
+            <Link to="/arrange" className={buttonVariants({ variant: 'outline' })}>
+              <ListOrdered /> Arrange order
+            </Link>
+            <Button
+              onClick={() => {
+                setEditing(null);
+                setFormOpen(true);
+              }}
+            >
+              <Plus /> New department
+            </Button>
+          </>
         }
       />
       {error && <ErrorState error={error} />}

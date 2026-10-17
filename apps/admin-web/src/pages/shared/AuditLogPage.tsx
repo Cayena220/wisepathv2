@@ -42,6 +42,8 @@ const VERBS: Record<string, string> = {
   bootstrap: 'set up',
   seed: 'seeded',
   migrate: 'migrated',
+  move: 'moved',
+  arrange: 'rearranged',
 };
 
 const targetLink = (log: AuditLog): string | null => {
@@ -59,6 +61,8 @@ const targetLink = (log: AuditLog): string | null => {
       return '/career-questions';
     case 'programAssessment':
       return `/program-assessments/${log.targetId}`;
+    case 'system':
+      return log.action === 'catalog.arrange' ? '/arrange' : null;
     default:
       return null;
   }
@@ -153,6 +157,8 @@ export function AuditLogPage() {
                 <option value="program.create">Programs created</option>
                 <option value="program.update">Programs updated</option>
                 <option value="program.delete">Programs deleted</option>
+                <option value="program.move">Programs moved</option>
+                <option value="catalog.arrange">Catalog rearranged</option>
                 <option value="question.create">Questions created</option>
                 <option value="assessment.update">Assessments updated</option>
               </NativeSelect>

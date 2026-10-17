@@ -25,6 +25,7 @@ import { StudentDetailPage } from '@/pages/shared/StudentDetailPage';
 import { AdminDetailPage } from '@/pages/super/AdminDetailPage';
 import { AdminNewPage } from '@/pages/super/AdminNewPage';
 import { AdminsPage } from '@/pages/super/AdminsPage';
+import { ArrangeCatalogPage } from '@/pages/super/ArrangeCatalogPage';
 import { DepartmentDetailPage } from '@/pages/super/DepartmentDetailPage';
 import { DepartmentsPage } from '@/pages/super/DepartmentsPage';
 import { OverviewPage } from '@/pages/super/OverviewPage';
@@ -93,6 +94,7 @@ const router = createBrowserRouter([
               { path: 'overview', element: <OverviewPage /> },
               { path: 'departments', element: <DepartmentsPage /> },
               { path: 'departments/:deptId', element: <DepartmentDetailPage /> },
+              { path: 'arrange', element: <ArrangeCatalogPage /> },
               { path: 'admins', element: <AdminsPage /> },
               { path: 'admins/new', element: <AdminNewPage /> },
               { path: 'admins/:uid', element: <AdminDetailPage /> },

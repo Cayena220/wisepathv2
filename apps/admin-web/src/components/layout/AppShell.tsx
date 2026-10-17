@@ -9,6 +9,7 @@ import {
   KeyRound,
   LayoutDashboard,
   ListChecks,
+  ListOrdered,
   LogOut,
   Menu,
   MessageCircleQuestion,
@@ -70,6 +71,7 @@ const SUPER_NAV: { group: string; items: NavItem[] }[] = [
     group: 'Catalog',
     items: [
       { to: '/programs', label: 'Programs', icon: GraduationCap },
+      { to: '/arrange', label: 'Arrange catalog', icon: ListOrdered },
       { to: '/career-questions', label: 'Career questions', icon: MessageCircleQuestion },
       { to: '/program-assessments', label: 'Program assessments', icon: ClipboardCheck },
     ],
@@ -202,6 +204,7 @@ const SEGMENT_LABELS: Record<string, string> = {
   analytics: 'Analytics',
   dashboard: 'Dashboard',
   departments: 'Departments',
+  arrange: 'Arrange catalog',
   admins: 'Admins',
   registration: 'Registration',
   students: 'Students',

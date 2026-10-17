@@ -1,5 +1,5 @@
 import { formatTuition, type Program } from '@wisepath/shared';
-import { GraduationCap, Lock, Plus } from 'lucide-react';
+import { GraduationCap, ListOrdered, Lock, Plus } from 'lucide-react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useAuth } from '@/auth/AuthProvider';
 import { DeptDot, EmptyState, ErrorState, ListSkeleton, PageHeader, StatusBadge, useRowLink } from '@/components/data/display';
@@ -35,16 +35,24 @@ export function ProgramsPage() {
         title="Programs"
         description={
           isSuperAdmin
-            ? 'Every degree program, grouped by department. Programs are managed by their department’s admin; you can view them all.'
+            ? 'Every degree program, in catalog order. Each department’s admin edits its programs; you set the order and which department each program belongs to.'
             : 'Your department’s degree programs. Only you can add, edit, archive or delete them.'
         }
         actions={
-          role === 'admin' && (
+          role === 'admin' ? (
             <Button asChild>
               <Link to="/programs/new">
                 <Plus /> New program
               </Link>
             </Button>
+          ) : (
+            isSuperAdmin && (
+              <Button asChild variant="outline">
+                <Link to="/arrange">
+                  <ListOrdered /> Arrange catalog
+                </Link>
+              </Button>
+            )
           )
         }
       />

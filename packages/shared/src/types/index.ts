@@ -336,6 +336,8 @@ export type AuditAction =
   | 'program.archive'
   | 'program.restore'
   | 'program.delete'
+  | 'program.move'
+  | 'catalog.arrange'
   | 'question.create'
   | 'question.update'
   | 'question.archive'
