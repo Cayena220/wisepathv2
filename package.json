@@ -2,7 +2,7 @@
   "name": "wisepath-system",
   "version": "2.0.0",
   "private": true,
-  "description": "WisePath v2 — Android student app, Admin/Super Admin website, shared scoring engine, Firebase rules and scripts.",
+  "description": "WisePath v2 \u00e2\u20ac\u201d Android student app, Admin/Super Admin website, shared scoring engine, Firebase rules and scripts.",
   "workspaces": [
     "packages/*",
     "apps/*",
@@ -21,8 +21,8 @@
     "seed": "npm run seed -w @wisepath/scripts --",
     "migrate": "npm run migrate -w @wisepath/scripts --",
     "demo": "npm run demo -w @wisepath/scripts --",
-    "deploy:rules": "firebase deploy --only firestore:rules,firestore:indexes",
-    "deploy:web": "firebase deploy --only hosting",
+    "deploy:rules": "firebase deploy --only firestore:rules,firestore:indexes --project wisepath-v2",
+    "deploy:web": "npx vercel@64.5.0 deploy --prod",
     "dev:emulator": "npm run dev:emulator -w @wisepath/admin-web"
   },
   "devDependencies": {

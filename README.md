@@ -5,12 +5,12 @@ Course recommendation and academic progress system for incoming college students
 | Part | Who uses it | Folder |
 |---|---|---|
 | **Android app** | Students | `apps/mobile` (Expo SDK 57) |
-| **Admin website** | One **Super Admin** + one **Admin per department** | `apps/admin-web` (Vite + React) |
+| **Admin website** — live at **https://wisepath-admin.vercel.app** | One **Super Admin** + one **Admin per department** | `apps/admin-web` (Vite + React, hosted on Vercel) |
 | Shared code | Scoring engine, types, seed catalog, brand | `packages/shared` |
 | Security rules | Firestore rules, indexes, rules tests | `firebase/` |
 | Admin scripts | Super Admin bootstrap, seed, migration | `scripts/` |
 
-Backend: Firebase **Spark (free) plan** — Authentication + Cloud Firestore + Hosting. No Cloud Functions are needed.
+Backend: Firebase **Spark (free) plan** — Authentication + Cloud Firestore (project `wisepath-v2`). The website is hosted on **Vercel**. No Cloud Functions are needed.
 
 ---
 
@@ -22,6 +22,7 @@ Backend: Firebase **Spark (free) plan** — Authentication + Cloud Firestore + H
 - **Only the owning admin can edit or delete** a department's programs, program assessments and department career questions. Other admins (and the Super Admin) can only view them.
 - **Results are clickable everywhere** — dashboard numbers, "Course results" bars, charts, activity, result lists and student pages all open the detail behind them.
 - **Background** — a designed WisePath background (route + compass motif) on the website and in the app.
+- **Analytics** — an Analytics page and dashboard Insights for both roles: student-journey funnel, how clear each top match is, strands, career interests, profile mix, program/department comparison, fit-check pass rates and score bands, weekly trends, per-question analysis on each fit check, and CSV export. Every bar opens the students behind it.
 - Fixed v1 bugs: program assessments were unreachable and always scored 0%; the Progress screen was unreachable; anyone could make themselves admin; deleted courses came back; admin records showed raw IDs.
 
 ---
@@ -64,23 +65,23 @@ To run the Android app against the same emulators, set `EXPO_PUBLIC_USE_EMULATOR
 npm run mobile
 ```
 
-Test logins (emulator only) are listed in `scripts/src/fixtures.ts`. Emulator UI: http://127.0.0.1:4000.
+Test logins (emulator only) are listed in `scripts/src/fixtures.ts`: the Super Admin, one admin per department (for example `ccit.admin@demo.wisepath.test`), and the demo students. Emulator UI: http://127.0.0.1:4000.
 
 ---
 
 ## Production setup (Firebase project `wisepath-v2`)
 
 1. **Config files**
-   - `apps/admin-web/.env.local` — copy from `.env.example` (Web app config, `VITE_FIREBASE_*`).
+   - `apps/admin-web/.env.local` — copy from `.env.example` (Web app config, `VITE_FIREBASE_*`) for local runs. On Vercel the same `VITE_FIREBASE_*` values are set as project environment variables.
    - `apps/mobile/.env` — copy from `.env.example` (`EXPO_PUBLIC_FIREBASE_*`).
    - `scripts/.secrets/service-account.json` — Firebase Console → Project settings → Service accounts → *Generate new private key*. **Never commit it** (it is git-ignored).
 2. **Deploy indexes first** (they take a few minutes to build). If the CLI offers to delete indexes that aren't in the file, answer **No**.
    ```bash
    npx firebase deploy --only firestore:indexes
    ```
-3. **Create the one Super Admin** (prints a one-time password if you don't pass `--password`):
+3. **Create the one Super Admin.** With `--reset-email` no password is printed; you then set it with **Forgot password?** on the website (Firebase emails you a link). Without it, a one-time password is printed once.
    ```bash
-   npm run bootstrap:superadmin -- --email you@school.edu --name "Your Name"
+   npm run bootstrap:superadmin -- --email you@school.edu --name "Your Name" --reset-email
    ```
 4. **Seed the catalog** (7 departments, 21 programs, 6 core questions, 3 fit checks):
    ```bash
@@ -93,7 +94,7 @@ Test logins (emulator only) are listed in `scripts/src/fixtures.ts`. Emulator UI
    ```bash
    npm run migrate -- --apply
    ```
-6. **Deploy rules + website** in the same window you release the new APK (the old v1 APK stops working once the new rules are live):
+6. **Deploy rules + website** in the same window you release the new APK (the old v1 APK stops working once the new rules are live). The website deploys to Vercel (project `wisepath-admin`, linked with `npx vercel link`):
    ```bash
    npm run deploy:rules
    ```
@@ -105,7 +106,7 @@ Test logins (emulator only) are listed in `scripts/src/fixtures.ts`. Emulator UI
    ```bash
    cd apps/mobile && npx eas build -p android --profile preview
    ```
-   `versionCode` is 3 and the same keystore is used, so it installs over the v1 APK.
+   The EAS project is `@ciandrie/wisepath`. `versionCode` is 3 and the same keystore is used, so it installs over the v1 APK.
 
 ---
 

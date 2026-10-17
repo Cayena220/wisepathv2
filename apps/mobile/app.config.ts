@@ -33,7 +33,8 @@ const config: ExpoConfig = {
   ],
   scheme: 'wisepath',
   extra: {
-    eas: { projectId: '176d696c-29b5-4d0e-a8ad-f91123feb736' },
+    // EAS project @ciandrie/wisepath (v1 used a teammate's project; the signing keystore is unchanged).
+    eas: { projectId: 'a20168cf-6ca5-4060-a29c-a10fb6421ce6' },
   },
 };
 
