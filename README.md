@@ -114,6 +114,16 @@ Test logins (emulator only) are listed in `scripts/src/fixtures.ts`: the Super A
 
 ---
 
+## Live accounts
+
+| Role | Login | Where |
+|---|---|---|
+| Super Admin | `superadmin@gmail.com` (password shared privately by the team) | https://wisepath-admin.vercel.app |
+| Department admins | Created by the Super Admin (Admins → Create admin), one per department | https://wisepath-admin.vercel.app |
+| Students | Self-register in the Android app while registration is open | Android APK |
+
+---
+
 ## How the roles work
 
 | | Super Admin | Department Admin | Student (Android) |
