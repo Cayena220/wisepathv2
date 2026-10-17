@@ -71,6 +71,8 @@ Test logins (emulator only) are listed in `scripts/src/fixtures.ts`: the Super A
 
 ## Production setup (Firebase project `wisepath-44ff8`)
 
+> The Firebase CLI must be signed in with an Owner of `wisepath-44ff8` (add one with `npx firebase login:add`, then deploy with `--account <owner email>`). Without CLI access, `npm run deploy-firestore -w @wisepath/scripts` releases the rules with the service-account key (indexes still need an Owner).
+>
 > v1's data lives in the older project `wisepath-v2`. v2 runs on a fresh project, so the migration step below is only needed if you ever move v1 data into the same project.
 
 1. **Config files**
